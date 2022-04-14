@@ -1,0 +1,80 @@
+﻿<Window x:Class="PhotoCheck.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PhotoCheck"
+        mc:Ignorable="d"
+        Title="MainWindow"  Height="768" Width="1366"
+        >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="300"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!--<ListView x:Name="listUsers" Margin="10" Grid.Column="0" Grid.Row="0">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Фото" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <Image Height="400" Source="{Binding photo}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Код" Width="100" DisplayMemberBinding="{Binding kodeWares}"/>
+                    <GridViewColumn Header="Назва" Width="400" DisplayMemberBinding="{Binding nameWares}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>-->
+
+
+        <ScrollViewer Grid.Row="0" Grid.Column="0" 
+                VerticalScrollBarVisibility="Auto" Name="SV_WaresList" Panel.ZIndex="2">
+            <ItemsControl  Name="WaresList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
+                            <Grid Margin="10,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <Image Height="400" Source="{Binding photo}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical" Grid.Column="1" Grid.ColumnSpan="50">
+                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding nameWares}" />
+                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding kodeWares}" />
+                                    <RadioButton GroupName="radioList"  FontSize="20" Content="Залишити фото" Checked="CheckRadiobutton"/>
+                                    <RadioButton GroupName="radioList" FontSize="20" Content="Переробити фото" Checked="CheckRadiobutton"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Border Grid.Row="0" Grid.Column="1" Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+            </Border.Effect>
+            <Grid>
+                <Button Width="100" Height="60" Style="{StaticResource yelowButton}">Im BUTTON!!!</Button>
+            </Grid>
+        </Border>
+        <!--<ListBox Name="RadioButtonList" Grid.Row="1">
+            <ListBox.ItemTemplate >
+                <DataTemplate >
+                    <RadioButton GroupName="radioList" Tag="{Binding}" Content="{Binding nameWares}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>-->
+    </Grid>
+</Window>
