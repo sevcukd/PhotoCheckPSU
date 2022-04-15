@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using Dapper;
 using System.Data.SqlClient;
 using Microsoft.Win32;
+using System.Collections.Generic;
 
 namespace PhotoCheck
 {
@@ -16,21 +17,27 @@ namespace PhotoCheck
     {
         public ObservableCollection<Wares> ListWares { get; set; }
         public eTypeCommit TypeCommit { get; set; }
+        public string pathPhoto { get; set; } = @"d:\Pictures\Products\";
+        public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction FROM dbo.Wares w WHERE w.Code_Direction="; //000148259
+        public string varConectionString = @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=180;";
+        public SqlConnection connection = null;
+        public string SerchCode { get; set; }
+
 
         public MainWindow()
         {
             InitializeComponent();
 
-            var query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction FROM dbo.Wares w WHERE w.Code_Direction=000148259";
+            
             var query2 = @"SELECT gw.code_group_wares AS Code_Direction ,name FROM dbo.GROUP_WARES gw WHERE gw.code_parent_group_wares IS null";
-            string varConectionString = @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=180;";
-            SqlConnection connection = null;
+            
             connection = new SqlConnection(varConectionString);
             connection.Open();
             TypeCommit = eTypeCommit.Auto;
-            var listWares = connection.Query<SQLWares>(query1).ToList();
-            var groupWares = connection.Query<CodeGroup>(query2).ToList();
-            string pathPhoto = @"d:\Pictures\Products\";
+            //var listWares = connection.Query<SQLWares>(query1).ToList();
+            List<CodeGroup> FirstGroupWares = connection.Query<CodeGroup>(query2).ToList();
+            var groupWares = FirstGroupWares.OrderBy(o => o.name).ToList();
+            
             //  MessageBox.Show(listWares[0].name_wares);
             //  MessageBox.Show(groupWares[0].code_group_wares);
 
@@ -60,44 +67,11 @@ namespace PhotoCheck
             //ObjExcel.Quit();
 
 
-            string[] files = System.IO.Directory.GetFiles(pathPhoto);
-            int[] photoName = new int[files.Length];
-            ListWares = new ObservableCollection<Wares>();
-            for (int i = 0; i < files.Length; i++)
-            {
-                try
-                {
-                    photoName[i] = Convert.ToInt32(System.IO.Path.GetFileNameWithoutExtension(files[i]));
+            
 
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show(System.IO.Path.GetFileNameWithoutExtension(files[i]) + " - назвіть фото кодом або це взагалі не фото(");
-                }
 
-            }
-            foreach (var item in listWares)
-            {
-                for (int j = 0; j < photoName.Length; j++)
-                {
-                    //MessageBox.Show(item.code_wares.ToString());
-                    //MessageBox.Show(photoName[j].ToString());
-                    if (item.code_wares == photoName[j])
-                    {
-                        Wares dataUser = new Wares()
-                        {
-                            photo = files[j],
-                            kodeWares = item.code_wares,
-                            nameWares = item.name_wares
-                        };
-                        ListWares.Add(dataUser);
-                        //RadioButtonList.Items.Add(dataUser);
-                        break;
-                    }
-                }
-            }
 
-            WaresList.ItemsSource = ListWares;
+            
             DirectionList.ItemsSource = groupWares;
 
         }
@@ -108,12 +82,27 @@ namespace PhotoCheck
             if (rbtn.DataContext is Wares)
             {
                 Wares temp = rbtn.DataContext as Wares;
-                if (rbtn.Content.ToString() == "Залишити фото")
+                switch (rbtn.Content.ToString())
                 {
-                    temp.savePhoto = true;
+                    case "Залишити фото":
+                        temp.savePhotoStatus = 0;
+                        break;
+                    case "Невірне фото":
+                        temp.savePhotoStatus = 1;
+                        break;
+                    case "Невірний код":
+                        temp.savePhotoStatus = 2;
+                        break;
+                    default:
+                        MessageBox.Show("Error");
+                        break;
                 }
-                else temp.savePhoto = false;
-                //MessageBox.Show(temp.savePhoto.ToString());
+                //if (rbtn.Content.ToString() == "Залишити фото")
+                //{
+                //    temp.savePhotoStatus = true;
+                //}
+                //else temp.savePhotoStatus = false;
+                //MessageBox.Show(temp.savePhotoStatus.ToString());
             }
         }
 
@@ -124,7 +113,11 @@ namespace PhotoCheck
             {
                 CodeGroup temp = ChBtn.DataContext as CodeGroup;
                 if (ChBtn.IsChecked == true)
+                {
                     temp.Show = true;
+                    SerchCode = temp.Code_Direction;
+                }
+                    
 
                 else temp.Show = false;
                // MessageBox.Show(temp.Show.ToString());
@@ -133,11 +126,69 @@ namespace PhotoCheck
 
         private void OpenFilePath(object sender, RoutedEventArgs e)
         {
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            MessageBox.Show(dialog.SelectedPath);
+            //OpenFileDialog openFileDialog = new OpenFileDialog();
+            //if (openFileDialog.ShowDialog() == true)
+            //    MessageBox.Show(openFileDialog.FileName);
+        }
+
+        private void RunButton(object sender, RoutedEventArgs e)
+        {
+            
+            string[] files = System.IO.Directory.GetFiles(pathPhoto);
+            int[] photoName = new int[files.Length];
+            ListWares = new ObservableCollection<Wares>();
+            ListWares.Clear();
+            WaresList.ItemsSource = ListWares;
+            //MessageBox.Show(query1 + SerchCode);
+            for (int i = 0; i < files.Length; i++)
+            {
+                try
+                {
+                    photoName[i] = Convert.ToInt32(System.IO.Path.GetFileNameWithoutExtension(files[i]));
+                    //MessageBox.Show(files[i]);
+                    //MessageBox.Show(photoName[i].ToString());
+
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show(System.IO.Path.GetFileNameWithoutExtension(files[i]) + " - назвіть фото кодом або це взагалі не фото(");
+                }
+
+            }
+            string aa = query1 + SerchCode;
+            connection = new SqlConnection(varConectionString);
+            connection.Open();
+            var listWares = connection.Query<SQLWares>(aa).ToList();
+            foreach (var item in listWares)
+            {
+                for (int j = 0; j < photoName.Length; j++)
+                {
+                    
+                    //MessageBox.Show(photoName[j].ToString());
+                    if (item.code_wares == photoName[j])
+                    {
+                        Wares dataUser = new Wares()
+                        {
+                            photo = files[j],
+                            kodeWares = item.code_wares,
+                            nameWares = item.name_wares
+                        };
+                        //MessageBox.Show(item.code_wares.ToString());
+                        ListWares.Add(dataUser);
+                        //RadioButtonList.Items.Add(dataUser);
+                        break;
+                    }
+                }
+            }
+            
             
 
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-                MessageBox.Show(openFileDialog.FileName);
+            //MessageBox.Show(ListWares.Count().ToString());
+            WaresList.ItemsSource = ListWares;
+            
         }
     }
 
@@ -164,7 +215,7 @@ namespace PhotoCheck
         public string photo { get; set; }
         public int kodeWares { get; set; }
         public string nameWares { get; set; }
-        public bool savePhoto { get; set; }
+        public int savePhotoStatus { get; set; } // 0-лишити фото; 1-невірне фото; 2-невірний код
 
     }
 }

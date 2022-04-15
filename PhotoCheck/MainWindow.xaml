@@ -15,7 +15,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <!--<ListView x:Name="listUsers" Margin="10" Grid.Column="0" Grid.Row="0">
+        <ListView x:Name="WaresList" Margin="10" Grid.Column="0" Grid.Row="0">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Фото" Width="200">
@@ -23,6 +23,11 @@
                             <DataTemplate>
                                 <StackPanel>
                                     <Image Height="400" Source="{Binding photo}"/>
+                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap"  Text="{Binding nameWares}" />
+                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding kodeWares}" />
+                                    <RadioButton GroupName="{Binding kodeWares}"  FontSize="20" Content="Залишити фото" Checked="CheckRadiobutton"/>
+                                    <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірне фото" Checked="CheckRadiobutton"/>
+                                    <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірний код" Checked="CheckRadiobutton"/>
                                 </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -31,10 +36,10 @@
                     <GridViewColumn Header="Назва" Width="400" DisplayMemberBinding="{Binding nameWares}"/>
                 </GridView>
             </ListView.View>
-        </ListView>-->
+        </ListView>
 
 
-        <ScrollViewer Grid.Row="0" Grid.Column="0" 
+        <!--<ScrollViewer Grid.Row="0" Grid.Column="0" 
                 VerticalScrollBarVisibility="Auto" Name="SV_WaresList" Panel.ZIndex="2">
             <ItemsControl  Name="WaresList">
                 <ItemsControl.ItemTemplate>
@@ -49,17 +54,18 @@
                                     <Image Height="400" Source="{Binding photo}"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Vertical" Grid.Column="1" Grid.ColumnSpan="50">
-                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding nameWares}" />
+                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap"  Text="{Binding nameWares}" />
                                     <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding kodeWares}" />
-                                    <RadioButton GroupName="radioList"  FontSize="20" Content="Залишити фото" Checked="CheckRadiobutton"/>
-                                    <RadioButton GroupName="radioList" FontSize="20" Content="Переробити фото" Checked="CheckRadiobutton"/>
+                                    <RadioButton GroupName="{Binding kodeWares}"  FontSize="20" Content="Залишити фото" Checked="CheckRadiobutton"/>
+                                    <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірне фото" Checked="CheckRadiobutton"/>
+                                    <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірний код" Checked="CheckRadiobutton"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </ScrollViewer>
+        </ScrollViewer>-->
 
 
         <Grid Grid.Row="0" Grid.Column="1">
@@ -67,10 +73,14 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <ScrollViewer Grid.Row="0" Grid.Column="0" 
+
+            <TextBlock FontSize="20" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Оберіть групу по якій буде проводитись відбір"/>
+            <ScrollViewer Grid.Row="1" Grid.Column="0" 
                 VerticalScrollBarVisibility="Auto" Panel.ZIndex="2">
                 <ItemsControl  Name="DirectionList">
                     <ItemsControl.ItemTemplate>
@@ -89,7 +99,19 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <Button Grid.Row="1" Width="100" Height="60" Style="{StaticResource yelowButton}" Click="OpenFilePath">Im BUTTON!!!</Button>
+
+            <Grid Grid.Column="0" Grid.Row="2">
+                <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox x:Name="PathPhotoTextBox" Text="{Binding pathPhoto, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"
+                             FontSize="20" Height="30" Width="350"></TextBox>
+                    <Button Grid.Row="2" Width="100" Height="60" Style="{StaticResource yelowButton}" Click="OpenFilePath">Змінити</Button>
+                </StackPanel>
+                    <Button Grid.Row="2" Width="100" Height="60" Style="{StaticResource yelowButton}" Click="RunButton">Знайти фото</Button>
+                </StackPanel>
+            </Grid>
+
         </Grid>
         <!--<ListBox Name="RadioButtonList" Grid.Row="1">
             <ListBox.ItemTemplate >

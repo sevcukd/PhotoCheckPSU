@@ -20,3 +20,9 @@ D:\Work\PhotoCheck\PhotoCheck\obj\Debug\App.baml
 D:\Work\PhotoCheck\PhotoCheck\bin\Debug\Dapper.dll
 D:\Work\PhotoCheck\PhotoCheck\bin\Debug\Dapper.xml
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.csproj.CopyComplete
+D:\Work\PhotoCheck\PhotoCheck\bin\Debug\Microsoft.WindowsAPICodePack.dll
+D:\Work\PhotoCheck\PhotoCheck\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+D:\Work\PhotoCheck\PhotoCheck\bin\Debug\Microsoft.WindowsAPICodePack.xml
+D:\Work\PhotoCheck\PhotoCheck\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml
+D:\Work\PhotoCheck\PhotoCheck\bin\Debug\DocumentFormat.OpenXml.dll
+D:\Work\PhotoCheck\PhotoCheck\bin\Debug\DocumentFormat.OpenXml.xml
