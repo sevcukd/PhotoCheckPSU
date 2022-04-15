@@ -10,7 +10,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="450"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -61,14 +61,36 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <Border Grid.Row="0" Grid.Column="1" Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
-            <Border.Effect>
-                <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
-            </Border.Effect>
-            <Grid>
-                <Button Width="100" Height="60" Style="{StaticResource yelowButton}">Im BUTTON!!!</Button>
-            </Grid>
-        </Border>
+
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer Grid.Row="0" Grid.Column="0" 
+                VerticalScrollBarVisibility="Auto" Panel.ZIndex="2">
+                <ItemsControl  Name="DirectionList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border  Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                                </Border.Effect>
+                                <Grid Margin="10,0,0,0">
+                                    <StackPanel Orientation="Vertical">
+                                        <RadioButton GroupName="radioListDirection" FontSize="18" Content="{Binding name}" Checked="CheckDirection"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <Button Grid.Row="1" Width="100" Height="60" Style="{StaticResource yelowButton}" Click="OpenFilePath">Im BUTTON!!!</Button>
+        </Grid>
         <!--<ListBox Name="RadioButtonList" Grid.Row="1">
             <ListBox.ItemTemplate >
                 <DataTemplate >

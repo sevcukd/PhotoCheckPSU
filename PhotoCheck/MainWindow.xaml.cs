@@ -1,11 +1,11 @@
-﻿using Microsoft.Office.Interop.Excel;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Dapper;
 using System.Data.SqlClient;
+using Microsoft.Win32;
 
 namespace PhotoCheck
 {
@@ -16,10 +16,10 @@ namespace PhotoCheck
     {
         public ObservableCollection<Wares> ListWares { get; set; }
         public eTypeCommit TypeCommit { get; set; }
-        
+
         public MainWindow()
         {
-        InitializeComponent();
+            InitializeComponent();
 
             var query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction FROM dbo.Wares w WHERE w.Code_Direction=000148259";
             var query2 = @"SELECT gw.code_group_wares AS Code_Direction ,name FROM dbo.GROUP_WARES gw WHERE gw.code_parent_group_wares IS null";
@@ -28,7 +28,7 @@ namespace PhotoCheck
             connection = new SqlConnection(varConectionString);
             connection.Open();
             TypeCommit = eTypeCommit.Auto;
-            var listWares= connection.Query<SQLWares>(query1).ToList();
+            var listWares = connection.Query<SQLWares>(query1).ToList();
             var groupWares = connection.Query<CodeGroup>(query2).ToList();
             string pathPhoto = @"d:\Pictures\Products\";
             //  MessageBox.Show(listWares[0].name_wares);
@@ -68,7 +68,7 @@ namespace PhotoCheck
                 try
                 {
                     photoName[i] = Convert.ToInt32(System.IO.Path.GetFileNameWithoutExtension(files[i]));
-                    
+
                 }
                 catch (Exception)
                 {
@@ -80,15 +80,15 @@ namespace PhotoCheck
             {
                 for (int j = 0; j < photoName.Length; j++)
                 {
-                   //MessageBox.Show(item.code_wares.ToString());
+                    //MessageBox.Show(item.code_wares.ToString());
                     //MessageBox.Show(photoName[j].ToString());
                     if (item.code_wares == photoName[j])
                     {
-                        Wares dataUser = new Wares()        
+                        Wares dataUser = new Wares()
                         {
-                            photo = files[j], 
-                            kodeWares = item.code_wares,         
-                            nameWares = item.name_wares     
+                            photo = files[j],
+                            kodeWares = item.code_wares,
+                            nameWares = item.name_wares
                         };
                         ListWares.Add(dataUser);
                         //RadioButtonList.Items.Add(dataUser);
@@ -98,6 +98,7 @@ namespace PhotoCheck
             }
 
             WaresList.ItemsSource = ListWares;
+            DirectionList.ItemsSource = groupWares;
 
         }
 
@@ -112,8 +113,31 @@ namespace PhotoCheck
                     temp.savePhoto = true;
                 }
                 else temp.savePhoto = false;
-                MessageBox.Show(temp.savePhoto.ToString());
+                //MessageBox.Show(temp.savePhoto.ToString());
             }
+        }
+
+        private void CheckDirection(object sender, RoutedEventArgs e)
+        {
+            RadioButton ChBtn = sender as RadioButton;
+            if (ChBtn.DataContext is CodeGroup)
+            {
+                CodeGroup temp = ChBtn.DataContext as CodeGroup;
+                if (ChBtn.IsChecked == true)
+                    temp.Show = true;
+
+                else temp.Show = false;
+               // MessageBox.Show(temp.Show.ToString());
+            }
+        }
+
+        private void OpenFilePath(object sender, RoutedEventArgs e)
+        {
+            
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+                MessageBox.Show(openFileDialog.FileName);
         }
     }
 
@@ -133,13 +157,14 @@ namespace PhotoCheck
     {
         public string Code_Direction { get; set; }
         public string name { get; set; }
+        public bool Show { get; set; }
     }
     public class Wares
     {
         public string photo { get; set; }
         public int kodeWares { get; set; }
         public string nameWares { get; set; }
-        public bool savePhoto { get; set; } 
+        public bool savePhoto { get; set; }
 
     }
 }
