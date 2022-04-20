@@ -7,6 +7,38 @@
         mc:Ignorable="d"
         Title="MainWindow"  Height="768" Width="1366"
         >
+    <Window.Resources>
+        <Style TargetType="{x:Type RadioButton}" >
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RadioButton}">
+                        <BulletDecorator Background="White" Cursor="Hand">
+                            <BulletDecorator.Bullet>
+                                <Grid Height="20" Width="20">
+                                    <!--Define size of the Bullet-->
+                                    <!--The two borders-->
+                                    <Border Name="RadioOuter" Background="Transparent" BorderBrush="Black" BorderThickness="2" CornerRadius="2" />
+                                    <Border CornerRadius="0" Margin="4" Name="RadioMark" Background="Red" Visibility="Hidden" />
+                                </Grid>
+                            </BulletDecorator.Bullet>
+                            <!--Text element-->
+                            <TextBlock Margin="3,1,0,0" Foreground="Black" FontFamily="Calibri" FontSize="20">
+                        <ContentPresenter />
+                            </TextBlock>
+                        </BulletDecorator>
+                        <!--If item is checked, trigger the visibility of the mark-->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="true">
+                                <!--If item is checked, trigger the visibility of the mark and change the color of the selected bullet into a darker gray for better highlighting-->
+                                <Setter TargetName="RadioMark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="RadioOuter" Property="BorderBrush" Value="#FFADADAD" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -15,16 +47,39 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ListView x:Name="WaresList" Margin="10" Grid.Column="0" Grid.Row="0">
+        <!--<ListView x:Name="WaresList" Margin="10" Grid.Column="0" Grid.Row="0">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Фото" Width="200">
+                    <GridViewColumn Header="Фото" Width="400">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel>
-                                    <Image Height="400" Source="{Binding photo}"/>
-                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap"  Text="{Binding nameWares}" />
-                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding kodeWares}" />
+                                    <Image Height="400" Source="{Binding photo}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    -->
+        <!--<Image Height="400">
+                                        <Image.Source>
+                                            <BitmapImage DecodePixelWidth="400"  
+                                                         UriSource="{Binding photo}" />
+                                        </Image.Source>
+                                    </Image>-->
+        <!--
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Код" Width="100" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding kodeWares}" TextWrapping="Wrap" Margin="5"
+                         Foreground="DarkOrange"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Назва" Width="400" >
+                        <GridViewColumn.CellTemplate >
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding nameWares}" FontSize="24" TextWrapping="Wrap"/>
                                     <RadioButton GroupName="{Binding kodeWares}"  FontSize="20" Content="Залишити фото" Checked="CheckRadiobutton"/>
                                     <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірне фото" Checked="CheckRadiobutton"/>
                                     <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірний код" Checked="CheckRadiobutton"/>
@@ -32,14 +87,12 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Код" Width="100" DisplayMemberBinding="{Binding kodeWares}"/>
-                    <GridViewColumn Header="Назва" Width="400" DisplayMemberBinding="{Binding nameWares}"/>
                 </GridView>
             </ListView.View>
-        </ListView>
+        </ListView>-->
 
 
-        <!--<ScrollViewer Grid.Row="0" Grid.Column="0" 
+        <ScrollViewer Grid.Row="0" Grid.Column="0" 
                 VerticalScrollBarVisibility="Auto" Name="SV_WaresList" Panel.ZIndex="2">
             <ItemsControl  Name="WaresList">
                 <ItemsControl.ItemTemplate>
@@ -51,7 +104,13 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <Image Height="400" Source="{Binding photo}"/>
+                                    <Image Height="400" x:Name="PhotoViev" Source="{Binding photo}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <!--<Image Height="200">
+                                        <Image.Source>
+                                            <BitmapImage DecodePixelWidth="200"  
+                                                         UriSource="{Binding photo }" />
+                                        </Image.Source>
+                                    </Image>-->
                                 </StackPanel>
                                 <StackPanel Orientation="Vertical" Grid.Column="1" Grid.ColumnSpan="50">
                                     <TextBlock Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap"  Text="{Binding nameWares}" />
@@ -59,13 +118,14 @@
                                     <RadioButton GroupName="{Binding kodeWares}"  FontSize="20" Content="Залишити фото" Checked="CheckRadiobutton"/>
                                     <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірне фото" Checked="CheckRadiobutton"/>
                                     <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірний код" Checked="CheckRadiobutton"/>
+                                    <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Пропустити" Checked="CheckRadiobutton"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </ScrollViewer>-->
+        </ScrollViewer>
 
 
         <Grid Grid.Row="0" Grid.Column="1">
@@ -78,37 +138,70 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock FontSize="20" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                Text="Оберіть групу по якій буде проводитись відбір"/>
-            <ScrollViewer Grid.Row="1" Grid.Column="0" 
+            <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Оберіть групу по якій буде проводитись відбір" FontWeight="Bold"/>
+            <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                </Border.Effect>
+                <ScrollViewer Grid.Row="1" Grid.Column="0" 
                 VerticalScrollBarVisibility="Auto" Panel.ZIndex="2">
-                <ItemsControl  Name="DirectionList">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border  Margin="5" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
-                                <Border.Effect>
-                                    <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
-                                </Border.Effect>
-                                <Grid Margin="10,0,0,0">
-                                    <StackPanel Orientation="Vertical">
-                                        <RadioButton GroupName="radioListDirection" FontSize="18" Content="{Binding name}" Checked="CheckDirection"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                    <ItemsControl  Name="DirectionList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border  Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                                    <Border.Effect>
+                                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                                    </Border.Effect>
+                                    <Grid Margin="10,0,0,0">
+                                        <StackPanel Orientation="Vertical">
+                                            <RadioButton GroupName="radioListDirection" FontSize="18" Content="{Binding name}" Checked="CheckDirection"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
 
             <Grid Grid.Column="0" Grid.Row="2">
                 <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox x:Name="PathPhotoTextBox" Text="{Binding pathPhoto, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}"
-                             FontSize="20" Height="30" Width="350"></TextBox>
-                    <Button Grid.Row="2" Width="100" Height="60" Style="{StaticResource yelowButton}" Click="OpenFilePath">Змінити</Button>
-                </StackPanel>
-                    <Button Grid.Row="2" Width="100" Height="60" Style="{StaticResource yelowButton}" Click="RunButton">Знайти фото</Button>
+                    <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock FontSize="18" TextWrapping="Wrap"
+                               HorizontalAlignment="Center" FontWeight="Bold"
+                               Text="Оберіть основиний каталог фото:"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBox x:Name="PathPhotoTextBox" TextChanged="PhotoCatalogTextBox"
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                                <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenFilePath">Змінити</Button>
+                            </StackPanel>
+                            <Button Grid.Row="2" Width="150" Height="40" Style="{StaticResource yelowButton}" Click="RunButton">Знайти фото</Button>
+                        </StackPanel>
+                    </Border>
+                    <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock FontSize="18" TextWrapping="Wrap"
+                               HorizontalAlignment="Center" FontWeight="Bold"
+                               Text="Оберіть куди перемістити затверджені фото:"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBox x:Name="PathToPhotoTextBox"  TextChanged="PhotoToCatalogTextBox"
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                                <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePath">Змінити</Button>
+                            </StackPanel>
+                            <Button Grid.Row="2" Width="150" Height="40" Style="{StaticResource greenButton}" Click="MovePhotoButton" >Підтвердити</Button>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </Grid>
 

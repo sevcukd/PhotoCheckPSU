@@ -1,0 +1,22 @@
+﻿<Window x:Class="PhotoCheck.SaveRes"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PhotoCheck"
+        mc:Ignorable="d"
+        Title="SaveRes" Height="450" Width="600">
+    <Grid>
+        <StackPanel>
+            <TextBlock FontSize="20" TextWrapping="Wrap"
+                               HorizontalAlignment="Center"
+                               Text="Оберіть куди перемістити затверджені фото:"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBox x:Name="PathToPhotoTextBox" 
+                             FontSize="20" Height="30" Width="350"></TextBox>
+                <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePath">Змінити</Button>
+            </StackPanel>
+            <Button Grid.Row="2" Width="150" Height="40" Style="{StaticResource yelowButton}" Click="MovePhotoButton">Перемістити фото</Button>
+        </StackPanel>
+    </Grid>
+</Window>
