@@ -32,3 +32,5 @@ D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.application
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.csproj.CopyComplete
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.exe
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.pdb
+D:\Work\PhotoCheck\PhotoCheck\obj\Debug\FindPhoto.g.cs
+D:\Work\PhotoCheck\PhotoCheck\obj\Debug\FindPhoto.baml

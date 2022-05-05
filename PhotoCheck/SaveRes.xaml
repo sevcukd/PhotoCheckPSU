@@ -5,18 +5,115 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhotoCheck"
         mc:Ignorable="d"
-        Title="SaveRes" Height="450" Width="600">
+        Title="SaveRes" Height="768" Width="1366">
     <Grid>
-        <StackPanel>
+
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="450"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <ScrollViewer Grid.Row="0" Grid.Column="0" 
+                VerticalScrollBarVisibility="Auto" Name="SV_WaresList" Panel.ZIndex="2">
+            <ItemsControl  Name="WaresList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border  BorderBrush="Silver" BorderThickness="0,0,0,1" >
+                            <Grid Margin="10,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <Image Height="400" x:Name="PhotoViev" Source="{Binding photoPath}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <!--<Image Height="200">
+                                        <Image.Source>
+                                            <BitmapImage DecodePixelWidth="200"  
+                                                         UriSource="{Binding photo }" />
+                                        </Image.Source>
+                                    </Image>-->
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical" Grid.Column="1" Grid.ColumnSpan="50">
+                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap"  Text="{Binding nameWares}" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Код: " FontSize="24"/>
+                                        <TextBox Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding kodeWares}" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Артикул: " FontSize="24"/>
+                                        <TextBox Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding Articl}" />
+                                    </StackPanel>
+
+                                    <Button Content="Копіювати фото"  Style="{StaticResource yelowButton}"
+                                            Click="CopyPhoto"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <StackPanel Grid.Column="1">
             <TextBlock FontSize="20" TextWrapping="Wrap"
                                HorizontalAlignment="Center"
-                               Text="Оберіть куди перемістити затверджені фото:"/>
+                               Text="Шлях до фото"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBox x:Name="PathToPhotoTextBox" 
-                             FontSize="20" Height="30" Width="350"></TextBox>
+                             FontSize="20" Height="30" Width="340"></TextBox>
                 <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePath">Змінити</Button>
             </StackPanel>
-            <Button Grid.Row="2" Width="150" Height="40" Style="{StaticResource yelowButton}" Click="MovePhotoButton">Перемістити фото</Button>
+
+            <TextBlock FontSize="20" TextWrapping="Wrap"
+                               HorizontalAlignment="Center"
+                               Text="Шлях до ексель файла з газетки"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBox x:Name="PathToExelTextBox" 
+                             FontSize="20" Height="30" Width="340"></TextBox>
+                <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePathExel">Змінити</Button>
+            </StackPanel>
+
+
+            <StackPanel Orientation="Horizontal" Margin="5"
+                        VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock FontSize="20">Номер колонки:</TextBlock>
+                <TextBox Width="30" Height="30" FontSize="20" x:Name="ExcelColum"/>
+            </StackPanel>
+
+            <Button Grid.Row="2" Width="150" Height="40" Style="{StaticResource yelowButton}" Click="FindPhoto">Знайти фото</Button>
+
+            <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                </Border.Effect>
+                <StackPanel>
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <TextBlock FontSize="20" Text="Код: " HorizontalAlignment="Center"/>
+                        <TextBox x:Name="CodeWaresTextBox" 
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" >
+                        <TextBlock FontSize="20" Text="Артикул: " HorizontalAlignment="Center"/>
+                        <TextBox x:Name="ArtclWaresTextBox" 
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                    </StackPanel>
+                    <TextBlock FontSize="20" x:Name="NameFindWaresTextBloc" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="5"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="За кодом" Width="150" Height="40"
+                            Style="{StaticResource yelowButton}" 
+                            Click="FindPhotoBuCode"/>
+                        <Button Content="За артикулом" Width="150" Height="40"
+                            Style="{StaticResource yelowButton}" 
+                            Click="FindPhotoByActcl"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </Grid>
 </Window>

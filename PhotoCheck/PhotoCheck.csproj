@@ -97,9 +97,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="FindPhoto.xaml.cs">
+      <DependentUpon>FindPhoto.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SaveRes.xaml.cs">
       <DependentUpon>SaveRes.xaml</DependentUpon>
     </Compile>
+    <Page Include="FindPhoto.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

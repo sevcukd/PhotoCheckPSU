@@ -24,11 +24,12 @@ namespace PhotoCheck
         public ObservableCollection<Wares> ListWares { get; set; }
         public ObservableCollection<Wares> ListWares2 { get; set; }
         public ObservableCollection<Wares> EmptuListWares { get; set; }
+        public List<PhotoInfo> photoInfos { get; set; }
         public eTypeCommit TypeCommit { get; set; }
         public string pathPhoto { get; set; } = @"d:\Pictures\Products\"; //@"d:\Pictures\Products\";
         public string pathToPhoto { get; set; } = @"\\truenas\Public\PHOTOBANK\High\";
         //public string pathToPhoto { get; set; } = @"d:\Pictures\Good\";
-        public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction FROM dbo.Wares w WHERE w.Code_Direction="; //000148259
+        public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl FROM dbo.Wares w WHERE w.Code_Direction="; //000148259
         public string varConectionString = @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=180;";
         public SqlConnection connection = null;
         public string SerchCode { get; set; }
@@ -167,7 +168,7 @@ namespace PhotoCheck
             try
             {
                 files = System.IO.Directory.GetFiles(pathPhoto);
-                List<PhotoInfo> photoInfos = new List<PhotoInfo>();
+                photoInfos = new List<PhotoInfo>();
                 ListWares = new ObservableCollection<Wares>();
                 for (int i = 0; i < files.Length; i++)
                 {
@@ -209,7 +210,9 @@ namespace PhotoCheck
                                     photoPath = photo.photoPath,
                                     photoFullName = photo.photoFullName,
                                     kodeWares = item.code_wares,
-                                    nameWares = item.name_wares
+                                    nameWares = item.name_wares,
+                                    Articl = item.articl,
+                                   
                                 };
                                 ListWares.Add(dataUser);
                                 //RadioButtonList.Items.Add(dataUser);
@@ -335,6 +338,12 @@ namespace PhotoCheck
         {
             pathToPhoto = PathToPhotoTextBox.Text;
         }
+
+        private void CopyPhoto(object sender, RoutedEventArgs e)
+        {
+            SaveRes save = new SaveRes(photoInfos);
+            save.Show();
+        }
     }
 
 
@@ -352,6 +361,7 @@ namespace PhotoCheck
         public string code_wares { get; set; }
         public string name_wares { get; set; }
         public string Code_Direction { get; set; }
+        public string articl { get; set; }
     }
     public class CodeGroup
     {
@@ -367,6 +377,7 @@ namespace PhotoCheck
         public string photoFullName { get; set; }
         public string kodeWares { get; set; }
         public string nameWares { get; set; }
+        public string Articl { get; set; }
         public int savePhotoStatus { get; set; } = 4; // 0-лишити фото; 1-невірне фото; 2-невірний код
 
         ~Wares()
