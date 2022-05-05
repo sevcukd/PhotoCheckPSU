@@ -25,7 +25,7 @@ namespace PhotoCheck
         public ObservableCollection<Wares> ListWares2 { get; set; }
         public ObservableCollection<Wares> EmptuListWares { get; set; }
         public eTypeCommit TypeCommit { get; set; }
-        public string pathPhoto { get; set; } = @"\\truenas\Public\PHOTOBANK\Check\"; //@"d:\Pictures\Products\";
+        public string pathPhoto { get; set; } = @"d:\Pictures\Products\"; //@"d:\Pictures\Products\";
         public string pathToPhoto { get; set; } = @"\\truenas\Public\PHOTOBANK\High\";
         //public string pathToPhoto { get; set; } = @"d:\Pictures\Good\";
         public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction FROM dbo.Wares w WHERE w.Code_Direction="; //000148259
