@@ -39,7 +39,7 @@
                                     </Image>-->
                                 </StackPanel>
                                 <StackPanel Orientation="Vertical" Grid.Column="1" Grid.ColumnSpan="50">
-                                    <TextBlock Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap"  Text="{Binding nameWares}" />
+                                    <TextBox Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap"  Text="{Binding nameWares}" />
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="Код: " FontSize="24"/>
                                         <TextBox Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding kodeWares}" />
@@ -49,8 +49,10 @@
                                         <TextBox Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding Articl}" />
                                     </StackPanel>
 
-                                    <Button Content="Копіювати фото"  Style="{StaticResource yelowButton}"
+                                    <Button Content="Копіювати фото в буфер"  Style="{StaticResource yelowButton}"
                                             Click="CopyPhoto"/>
+                                    <Button Content="Копіювати фото на диск"  Style="{StaticResource yelowButton}"
+                                            Click="CopyPhotoToRepository"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -59,61 +61,145 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <StackPanel Grid.Column="1">
-            <TextBlock FontSize="20" TextWrapping="Wrap"
+        <ScrollViewer Grid.Column="1">
+            <StackPanel >
+                <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock FontSize="20" TextWrapping="Wrap"
                                HorizontalAlignment="Center"
                                Text="Шлях до фото"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBox x:Name="PathToPhotoTextBox" 
-                             FontSize="20" Height="30" Width="340"></TextBox>
-                <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePath">Змінити</Button>
-            </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox x:Name="PathToPhotoTextBox"  TextChanged="PathToPhotoCanged"
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                            <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePath">Змінити</Button>
+                        </StackPanel>
 
-            <TextBlock FontSize="20" TextWrapping="Wrap"
+                        <TextBlock FontSize="20" TextWrapping="Wrap"
                                HorizontalAlignment="Center"
                                Text="Шлях до ексель файла з газетки"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBox x:Name="PathToExelTextBox" 
-                             FontSize="20" Height="30" Width="340"></TextBox>
-                <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePathExel">Змінити</Button>
-            </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox x:Name="PathToExelTextBox"  TextChanged="ChangeExcelPath"
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                            <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePathExel">Змінити</Button>
+                        </StackPanel>
 
 
-            <StackPanel Orientation="Horizontal" Margin="5"
+                        <StackPanel Orientation="Horizontal" Margin="5"
                         VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock FontSize="20">Номер колонки:</TextBlock>
-                <TextBox Width="30" Height="30" FontSize="20" x:Name="ExcelColum"/>
-            </StackPanel>
+                            <TextBlock FontSize="20">Номер колонки:</TextBlock>
+                            <TextBox Width="30" Height="30" FontSize="20" x:Name="ExcelColum" TextChanged="NumColumChanged" Text="5"/>
+                        </StackPanel>
 
-            <Button Grid.Row="2" Width="150" Height="40" Style="{StaticResource yelowButton}" Click="FindPhoto">Знайти фото</Button>
+                        <Button Grid.Row="2" Width="150" Height="40"
+                            Click="FindPhoto" Content="Знайти фото">
 
-            <Border  Grid.Row="1" Padding="10"
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isExcelOk, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding isExcelOk, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <Border  Grid.Row="1" Padding="10"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
-                </Border.Effect>
-                <StackPanel>
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                        <TextBlock FontSize="20" Text="Код: " HorizontalAlignment="Center"/>
-                        <TextBox x:Name="CodeWaresTextBox" 
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock FontSize="20" Text="Код: " HorizontalAlignment="Center"/>
+                            <TextBox x:Name="CodeWaresTextBox" 
                              FontSize="20" Height="30" Width="300"></TextBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" >
-                        <TextBlock FontSize="20" Text="Артикул: " HorizontalAlignment="Center"/>
-                        <TextBox x:Name="ArtclWaresTextBox" 
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" >
+                            <TextBlock FontSize="20" Text="Артикул: " HorizontalAlignment="Center"/>
+                            <TextBox x:Name="ArtclWaresTextBox" 
                              FontSize="20" Height="30" Width="300"></TextBox>
-                    </StackPanel>
-                    <TextBlock FontSize="20" x:Name="NameFindWaresTextBloc" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="5"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="За кодом" Width="150" Height="40"
+                        </StackPanel>
+                        <TextBlock FontSize="20" x:Name="NameFindWaresTextBloc" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="5"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Content="За кодом" Width="150" Height="40"
                             Style="{StaticResource yelowButton}" 
                             Click="FindPhotoBuCode"/>
-                        <Button Content="За артикулом" Width="150" Height="40"
+                            <Button Content="За артикулом" Width="150" Height="40"
                             Style="{StaticResource yelowButton}" 
                             Click="FindPhotoByActcl"/>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Border>
-        </StackPanel>
+                </Border>
+
+
+
+                <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                    </Border.Effect>
+                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center">
+                        <TextBlock FontSize="20" Text="Вкажіть шлях куди копіювати фото: " HorizontalAlignment="Center"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox x:Name="CopyPhotoPath" 
+                             FontSize="20" Height="30" Width="300" >D:\</TextBox>
+                            <Button Grid.Row="2" Width="100" Height="40" 
+                                Style="{StaticResource yelowButton}" Click="OpenToFilePathSavePhoto">Змінити</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock FontSize="20" TextWrapping="Wrap"
+                               HorizontalAlignment="Center" FontWeight="Bold"
+                               Text="Копіювання і зміна назви фото"/>
+                        <TextBlock FontSize="20" TextWrapping="Wrap"
+                               HorizontalAlignment="Center"
+                               Text="Папка де фото названі артикулом:"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox x:Name="TextBoxActclPath"  TextChanged="TextChangedActclPath"
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                            <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" 
+                                    Click="ClickPhotoPathArtcl">Змінити</Button>
+                        </StackPanel>
+
+                        <TextBlock FontSize="20" TextWrapping="Wrap"
+                               HorizontalAlignment="Center"
+                               Text="Папка куди скопіювати і назвати кодом:"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox x:Name="TextBoxCodePath"  TextChanged="TextChangedCodePath"
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                            <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" 
+                                    Click="ClickPhotoPathToCode">Змінити</Button>
+                        </StackPanel>
+
+
+                        <Button Grid.Row="2" Width="200" Height="40"
+                            Click="CopyAndRenamePhoto" Content="Скопіювати фото" Style="{StaticResource greenButton}">
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

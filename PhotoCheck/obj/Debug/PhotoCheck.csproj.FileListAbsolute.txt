@@ -15,12 +15,14 @@ D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.csproj.AssemblyReference.cach
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.csproj.SuggestedBindingRedirects.cache
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\Interop.LCC11.dll
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.csproj.ResolveComReference.cache
+D:\Work\PhotoCheck\PhotoCheck\obj\Debug\FindPhoto.g.cs
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\MainWindow.g.cs
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\SaveRes.g.cs
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\App.g.cs
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck_MarkupCompile.cache
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck_MarkupCompile.lref
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\App.baml
+D:\Work\PhotoCheck\PhotoCheck\obj\Debug\FindPhoto.baml
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\MainWindow.baml
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\SaveRes.baml
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.g.resources
@@ -32,5 +34,3 @@ D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.application
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.csproj.CopyComplete
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.exe
 D:\Work\PhotoCheck\PhotoCheck\obj\Debug\PhotoCheck.pdb
-D:\Work\PhotoCheck\PhotoCheck\obj\Debug\FindPhoto.g.cs
-D:\Work\PhotoCheck\PhotoCheck\obj\Debug\FindPhoto.baml

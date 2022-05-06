@@ -13,20 +13,22 @@ using Microsoft.Win32.SafeHandles;
 using System.Threading;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.ComponentModel;
 
 namespace PhotoCheck
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : System.Windows.Window, IDisposable
+    public partial class MainWindow : System.Windows.Window, IDisposable, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<Wares> ListWares { get; set; }
         public ObservableCollection<Wares> ListWares2 { get; set; }
         public ObservableCollection<Wares> EmptuListWares { get; set; }
         public List<PhotoInfo> photoInfos { get; set; }
         public eTypeCommit TypeCommit { get; set; }
-        public string pathPhoto { get; set; } = @"d:\Pictures\Products\"; //@"d:\Pictures\Products\";
+        public string pathPhoto { get; set; } = @"\\truenas\Public\PHOTOBANK\Check\"; //@"d:\Pictures\Products\";
         public string pathToPhoto { get; set; } = @"\\truenas\Public\PHOTOBANK\High\";
         //public string pathToPhoto { get; set; } = @"d:\Pictures\Good\";
         public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl FROM dbo.Wares w WHERE w.Code_Direction="; //000148259
