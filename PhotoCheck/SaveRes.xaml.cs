@@ -58,8 +58,13 @@ namespace PhotoCheck
             connection.Open();
             listWares = connection.Query<SQLWares>(query1).ToList();
             //System.Windows.MessageBox.Show(listWares[0].articl);
+            FindPhotoToPath();
+
+        }
 
 
+        private void FindPhotoToPath()
+        {
             string[] files = null;
             files = System.IO.Directory.GetFiles(pathToPhoto);
             photoInfos = new List<PhotoInfo>();
@@ -80,13 +85,7 @@ namespace PhotoCheck
                 }
 
             }
-
-
-
         }
-
-
-
         private void OpenToFilePath(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -118,7 +117,7 @@ namespace PhotoCheck
         {
             ListWares = new ObservableCollection<Wares>();
 
-
+            FindPhotoToPath();
 
             //System.Windows.MessageBox.Show(photoInfos.Count().ToString());
 
