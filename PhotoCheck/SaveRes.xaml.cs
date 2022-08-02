@@ -25,6 +25,8 @@ namespace PhotoCheck
         public string pathToPhoto { get; set; } = @"\\truenas\Public\PHOTOBANK\Medium\"; // \\truenas\Public\PHOTOBANK\Medium\   d:\Pictures\Products\
         public string pathToExel { get; set; } = @"";
         public List<SQLWares> listWares { get; set; }
+        public List<SQLKasaList> KasaList { get; set; }
+        public List<SQLExpressGoods> ExpressGoods { get; set; }
         public bool isColumWrite { get; set; }
         public bool isExcelPath { get; set; }
         public bool isExcelOk
@@ -40,6 +42,13 @@ namespace PhotoCheck
         }
 
         public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl FROM dbo.Wares w "; //000148259
+        public string query2 = @"SELECT _code, _CASH_place._Description FROM DW.dbo.V1C_DIM_OPTION_WPC _CASH_place";
+        public string query3 = @"SELECT  g.Order_Button , g.Name_Button, w1.code_wares AS CodeWares ,w1.name_wares,w1.articl
+  FROM DW.dbo.V1C_DIM_OPTION_WPC O  
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
+  JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef AND G.Order_Button_wares = W.Order_Button
+  JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
+    WHERE o._Code=";
         public string varConectionString = @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=180;";
         public SqlConnection connection = null;
         public eTypeCommit TypeCommit { get; set; }
@@ -57,6 +66,10 @@ namespace PhotoCheck
             connection = new SqlConnection(varConectionString);
             connection.Open();
             listWares = connection.Query<SQLWares>(query1).ToList();
+            KasaList = connection.Query<SQLKasaList>(query2).ToList();
+            KasaListShow.ItemsSource = KasaList;
+
+            ExpressGoods = connection.Query<SQLExpressGoods>($"{query3}'{KasaList.First()._code}'").ToList();
             //System.Windows.MessageBox.Show(listWares[0].articl);
             FindPhotoToPath();
 
@@ -599,7 +612,7 @@ namespace PhotoCheck
 
 
             }
-           //System.Windows.MessageBox.Show(photoArtcl.Count.ToString());
+            //System.Windows.MessageBox.Show(photoArtcl.Count.ToString());
 
             foreach (var photo in photoArtcl)
             {
@@ -619,6 +632,11 @@ namespace PhotoCheck
                     }
                 }
             }
+        }
+
+        private void CheckKasa(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

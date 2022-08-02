@@ -13,7 +13,6 @@ D:\Work\PhotoCheck\PhotoCheck\bin\Release\Microsoft.WindowsAPICodePack.xml
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\Microsoft.WindowsAPICodePack.Shell.xml
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.AssemblyReference.cache
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.SuggestedBindingRedirects.cache
-D:\Work\PhotoCheck\PhotoCheck\obj\Release\Interop.LCC11.dll
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.ResolveComReference.cache
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\FindPhoto.g.cs
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\MainWindow.g.cs
@@ -34,3 +33,4 @@ D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.application
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.CopyComplete
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.exe
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.pdb
+D:\Work\PhotoCheck\PhotoCheck\obj\Release\Interop.UCAddinLib.dll

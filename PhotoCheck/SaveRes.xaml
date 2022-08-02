@@ -66,17 +66,26 @@
                 <Border  Grid.Row="1" Padding="10"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
-                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="Red"/>
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock FontSize="20" TextWrapping="Wrap"
                                HorizontalAlignment="Center"
-                               Text="Шлях до фото"/>
+                               Text="Шлях до фото*" Foreground="Red"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBox x:Name="PathToPhotoTextBox"  TextChanged="PathToPhotoCanged"
                              FontSize="20" Height="30" Width="300"></TextBox>
                             <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePath">Змінити</Button>
                         </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                    </Border.Effect>
+                    <StackPanel>
+ 
 
                         <TextBlock FontSize="20" TextWrapping="Wrap"
                                HorizontalAlignment="Center"
@@ -163,7 +172,36 @@
                     </StackPanel>
                 </Border>
 
+
+                <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Оберіть групу по якій буде проводитись відбір" FontWeight="Bold"/>
                 <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                    </Border.Effect>
+                    <ItemsControl  Name="KasaListShow">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border  Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                                        <Border.Effect>
+                                            <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                                        </Border.Effect>
+                                        <Grid Margin="10,0,0,0">
+                                            <StackPanel Orientation="Vertical">
+                                                <RadioButton GroupName="radioListDirection" FontSize="18" Content="{Binding _Description}" Checked="CheckKasa"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                </Border>
+                
+                
+                
+            <!--Тільки тимчасово-->
+                <Border  Grid.Row="1" Padding="10" Visibility="Collapsed"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
@@ -198,7 +236,9 @@
                         </Button>
                     </StackPanel>
                 </Border>
-
+                <!--Тільки тимчасово КІНЕЦЬ-->
+                
+                
             </StackPanel>
         </ScrollViewer>
     </Grid>

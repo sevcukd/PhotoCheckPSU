@@ -365,6 +365,22 @@ namespace PhotoCheck
         public string Code_Direction { get; set; }
         public string articl { get; set; }
     }
+    public class SQLKasaList
+    {
+        public string _code { get; set; }
+        public string _Description { get; set; }
+    }
+    public class SQLExpressGoods
+    {
+        public string Order_Button { get; set; }
+        public string Name_Button { get; set; }
+        public string code_wares { get; set; }
+        public string CodeWares { get; set; }
+        public string name_wares { get; set; }
+        public string articl { get; set; }
+        
+    }
+    
     public class CodeGroup
     {
         public string Code_Direction { get; set; }
