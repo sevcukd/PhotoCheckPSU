@@ -1,4 +1,4 @@
-﻿
+﻿using System.Windows.Controls;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -12,6 +12,10 @@ using Dapper;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Printing;
+using RadioButton = System.Windows.Controls.RadioButton;
+using Font = System.Drawing.Font;
 
 namespace PhotoCheck
 {
@@ -27,6 +31,10 @@ namespace PhotoCheck
         public List<SQLWares> listWares { get; set; }
         public List<SQLKasaList> KasaList { get; set; }
         public List<SQLExpressGoods> ExpressGoods { get; set; }
+        List<SQLExpressGoods> SortedExpressGoods { get; set; }
+        public string SelectedExpressGoodsCode { get; set; }
+        public string SelectedExpressGoodsName { get; set; }
+        int current = 0;
         public bool isColumWrite { get; set; }
         public bool isExcelPath { get; set; }
         public bool isExcelOk
@@ -40,10 +48,20 @@ namespace PhotoCheck
                 else return false;
             }
         }
+        public bool isSelectedExpressGoods
+        {
+            get
+            {
+                if (SelectedExpressGoodsCode != null)
+                    return true;
+                else return false;
+            }
+        }
 
         public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl FROM dbo.Wares w "; //000148259
         public string query2 = @"SELECT _code, _CASH_place._Description FROM DW.dbo.V1C_DIM_OPTION_WPC _CASH_place";
-        public string query3 = @"SELECT  g.Order_Button , g.Name_Button, w1.code_wares AS CodeWares ,w1.name_wares,w1.articl
+        public string query3 = @"SELECT  g.Order_Button , g.Name_Button, w1.code_wares AS CodeWares ,w1.name_wares,w1.articl,
+  (SELECT max(bc.bar_code)  FROM barcode bc WHERE bc.code_wares=w1.code_wares) AS bar_code
   FROM DW.dbo.V1C_DIM_OPTION_WPC O  
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_GROUP G ON o._IDRRef=G._Reference18850_IDRRef
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef AND G.Order_Button_wares = W.Order_Button
@@ -69,7 +87,7 @@ namespace PhotoCheck
             KasaList = connection.Query<SQLKasaList>(query2).ToList();
             KasaListShow.ItemsSource = KasaList;
 
-            ExpressGoods = connection.Query<SQLExpressGoods>($"{query3}'{KasaList.First()._code}'").ToList();
+
             //System.Windows.MessageBox.Show(listWares[0].articl);
             FindPhotoToPath();
 
@@ -79,7 +97,14 @@ namespace PhotoCheck
         private void FindPhotoToPath()
         {
             string[] files = null;
-            files = System.IO.Directory.GetFiles(pathToPhoto);
+            try
+            {
+                files = System.IO.Directory.GetFiles(pathToPhoto);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Вкажіть правильний шлях! {ex.Message}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error); 
+            }
             photoInfos = new List<PhotoInfo>();
 
 
@@ -298,6 +323,11 @@ namespace PhotoCheck
 
 
             int temp = CodeWaresTextBox.Text.Length;
+            if (temp == 0)
+            {
+                System.Windows.MessageBox.Show("Введіть код!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             switch (temp)
             {
                 case 9:
@@ -389,6 +419,11 @@ namespace PhotoCheck
 
 
             int temp = ArtclWaresTextBox.Text.Length;
+            if (temp == 0)
+            {
+                System.Windows.MessageBox.Show("Введіть артикул!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             switch (temp)
             {
                 case 8:
@@ -636,7 +671,194 @@ namespace PhotoCheck
 
         private void CheckKasa(object sender, RoutedEventArgs e)
         {
+            RadioButton ChBtn = sender as RadioButton;
+            if (ChBtn.DataContext is SQLKasaList)
+            {
+                SQLKasaList temp = ChBtn.DataContext as SQLKasaList;
+                if (ChBtn.IsChecked == true)
+                {
+                    SelectedExpressGoodsCode = temp._code;
+                    SelectedExpressGoodsName = temp._Description;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isSelectedExpressGoods"));
+            }
+        }
 
+        private void OpenToFilePathSaveCsv(object sender, RoutedEventArgs e)
+        {
+            var dialog = new FolderBrowserDialog();
+            DialogResult result = dialog.ShowDialog();
+            SaveCsvPath.Text = dialog.SelectedPath + @"\";
+        }
+
+        private void SaveCsvButton(object sender, RoutedEventArgs e)
+        {
+            FindPhotoToPath();
+            //пошук всіх швидких товарів
+            ExpressGoods = connection.Query<SQLExpressGoods>($"{query3}'{SelectedExpressGoodsCode}'").ToList();
+
+            //сортування по групах
+            SortedExpressGoods = ExpressGoods.OrderBy(n => n.Name_Button).ToList();
+            LinkToPhoto();
+            //створення строк для запису файлу
+            List<string> StrWriteExpressGoods = new List<string>();
+            StrWriteExpressGoods.Add($"Назва групи;Назва товару;Код товару;Артикул;Штрихкод;Чи присутнє фото");
+            foreach (var item in SortedExpressGoods)
+            {
+                StrWriteExpressGoods.Add($"{item.Name_Button};{item.name_wares};{item.CodeWares};{item.articl};{item.bar_code};{item.isPhotoPresent.ToString()}");
+            }
+
+            //запис в файл
+            try
+            {
+                File.AppendAllLines($"{SaveCsvPath.Text}{SelectedExpressGoodsName}.csv", StrWriteExpressGoods, System.Text.Encoding.GetEncoding("Windows-1251"));
+                System.Windows.MessageBox.Show($"Шлях до файлу: {SaveCsvPath.Text}{SelectedExpressGoodsName}.csv", "Файл збережено!", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void PrintExpressGoodsButton(object sender, RoutedEventArgs e)
+        {
+            FindPhotoToPath();
+            //пошук всіх швидких товарів
+            ExpressGoods = connection.Query<SQLExpressGoods>($"{query3}'{SelectedExpressGoodsCode}'").ToList();
+
+            //сортування по групах
+            SortedExpressGoods = ExpressGoods.OrderBy(n => n.Name_Button).ToList();
+
+            LinkToPhoto();
+
+
+            // объект для печати
+            PrintDocument printDocument = new PrintDocument();
+
+            // обработчик события печати
+            printDocument.PrintPage += PrintPageHandler;
+
+            // диалог настройки печати
+            System.Windows.Forms.PrintDialog printDialog = new System.Windows.Forms.PrintDialog();
+
+            // установка объекта печати для его настройки
+            printDialog.Document = printDocument;
+
+
+            var previewDlg = new PrintPreviewDialog();
+            //Create a PrintDocument object  
+            PrintDocument pd = new PrintDocument();
+            //Add print-page event handler  
+            pd.PrintPage +=  PrintPageHandler;
+            //Set Document property of PrintPreviewDialog  
+            previewDlg.Document = pd;
+            //Display dialog  
+            previewDlg.Show();
+
+            // если в диалоге было нажато ОК
+            //try
+            //{
+            //    if (printDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //        printDialog.Document.Print(); // печатаем
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
+
+        }
+
+        public void LinkToPhoto()
+        {
+            foreach (var expressGoodsTMP in SortedExpressGoods)
+            {
+                int index = 0;
+                foreach (var infoPhoto in photoInfos)
+                {
+                    if (expressGoodsTMP.CodeWares == infoPhoto.photoName)
+                    {
+                        expressGoodsTMP.isPhotoPresent = true;
+                        expressGoodsTMP.pathPhoto = infoPhoto.photoPath;
+                        break;
+                    }
+                }
+            }
+        }
+        // обработчик события печати
+        void PrintPageHandler(object sender, PrintPageEventArgs e)
+        {
+            while (current!=10)
+            {
+                current++;
+                PrintPages(SortedExpressGoods, e);
+                
+            }
+            
+
+
+        }
+         void PrintPages(List<SQLExpressGoods> sortExpressGoods, PrintPageEventArgs e)
+        {
+            
+            var barcode = new BarcodeLib.Barcode();
+            int left = 20;
+            int top = 10;
+            int mainFontSize = 14;
+            int totalFontSize = 10;
+            int counter = 0;
+            System.Drawing.Image imageBarcode;
+            foreach (var expressGoods in sortExpressGoods)
+            {
+
+                
+                //Pen myPen = new Pen(System.Drawing.Color.Red, 5);
+                //System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top, 200, 160);
+                //e.Graphics.DrawRectangle(myPen, myRectangle);
+
+                //Фото
+                if (expressGoods.pathPhoto != null)
+                    e.Graphics.DrawImage(System.Drawing.Image.FromFile(expressGoods.pathPhoto), left + 350, top + 10, 100, 100);
+
+                if (expressGoods.bar_code != null && expressGoods.bar_code.Length == 13)
+                {
+                    try
+                    {
+                        imageBarcode = barcode.Encode(BarcodeLib.TYPE.EAN13, expressGoods.bar_code, Color.Black, Color.White, 290, 120);
+                        e.Graphics.DrawImage(imageBarcode, 650, top + 20, 150, 60);
+                    }
+                    catch (Exception)
+                    {
+                        System.Windows.MessageBox.Show($"{expressGoods.name_wares} - не правильний штрихкод: {expressGoods.bar_code}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                }
+
+
+                //e.Graphics.DrawString("Назва товару:", new Font("Arial", totalFontSize), Brushes.Black, left, top);
+                e.Graphics.DrawString(expressGoods.name_wares, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.Black, left, top += 14);
+                e.Graphics.DrawString("Артикул:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
+
+                SolidBrush myBrush = new SolidBrush(Color.Green);
+                System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top += 14, 90, 20);
+                e.Graphics.FillRectangle(myBrush, myRectangle);
+                e.Graphics.DrawString(expressGoods.articl, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
+                e.Graphics.DrawString("Назва групи товарів:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
+                e.Graphics.DrawString(expressGoods.Name_Button, new Font("Arial", mainFontSize), Brushes.Black, left, top += 14);
+
+                //top += 20;
+                Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
+                e.Graphics.DrawLine(myPen, 0, top + 23, 1000, top + 23);
+                top += 15;
+                counter++;
+                if (counter >= 11)
+                {
+                    // current += 10;
+                    e.HasMorePages = true;
+                }
+                
+
+                
+            }
         }
     }
 }

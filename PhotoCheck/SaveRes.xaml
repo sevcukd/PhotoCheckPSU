@@ -180,6 +180,7 @@
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
                     </Border.Effect>
+                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center">
                     <ItemsControl  Name="KasaListShow">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -196,6 +197,54 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+                    
+                        <TextBlock FontSize="20" Text="Шлях для збереження документу: " HorizontalAlignment="Center"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox x:Name="SaveCsvPath" 
+                             FontSize="20" Height="30" Width="300" >D:\</TextBox>
+                            <Button Grid.Row="2" Width="100" Height="40" 
+                                Style="{StaticResource yelowButton}" Click="OpenToFilePathSaveCsv">Змінити</Button>
+                        </StackPanel>
+                        <Button Grid.Row="2" Width="200" Height="40"
+                            Click="SaveCsvButton" Content="Зберегти файл">
+
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isSelectedExpressGoods, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding isSelectedExpressGoods, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Grid.Row="2" Width="200" Height="40"
+                            Click="PrintExpressGoodsButton" Content="Друк макету">
+
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isSelectedExpressGoods, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding isSelectedExpressGoods, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
                 </Border>
                 
                 
