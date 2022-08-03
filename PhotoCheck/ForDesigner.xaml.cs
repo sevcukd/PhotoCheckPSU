@@ -742,7 +742,7 @@ namespace PhotoCheck
             PrintDocument pd = new PrintDocument();
             //Add print-page event handler
             counter = 0;
-            pd.PrintPage += pd_PrintPage;
+            pd.PrintPage += PrintWeightListCAS;
             //Set Document property of PrintPreviewDialog  
             previewDlg.Document = pd;
             //Display dialog  
@@ -787,7 +787,6 @@ namespace PhotoCheck
         {
             foreach (var expressGoodsTMP in SortedExpressGoods)
             {
-                int index = 0;
                 foreach (var infoPhoto in photoInfos)
                 {
                     if (expressGoodsTMP.CodeWares == infoPhoto.photoName)
@@ -867,7 +866,7 @@ namespace PhotoCheck
         //        }
         //    }
         //}
-        
+
         public void pd_PrintPage(object sender, PrintPageEventArgs e)
         {
 
@@ -901,6 +900,38 @@ namespace PhotoCheck
                     }
 
                 }
+                else
+                {
+                    if (SortedExpressGoods[counter].name_wares.Contains("ваг"))
+                    {
+                        string EAN13String = $"22{SortedExpressGoods[counter].articl.Substring(2)}0000";
+                        try
+                        {
+                            imageBarcode = barcode.Encode(BarcodeLib.TYPE.EAN13, EAN13String, Color.Red, Color.White, 290, 120);
+                            e.Graphics.DrawImage(imageBarcode, 650, top + 30, 150, 60);
+                            e.Graphics.DrawString("Ваговий товар - введіть кількість*:", new Font("Arial", 8), Brushes.Red, 650, top + 15);
+                        }
+                        catch (Exception)
+                        {
+                            System.Windows.MessageBox.Show($"{SortedExpressGoods[counter].name_wares} - не коректні дані!", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    //else
+                    //{
+                    //    string Code128String = Convert.ToInt32(SortedExpressGoods[counter].articl).ToString();
+                    //    try
+                    //    {
+                    //        imageBarcode = barcode.Encode(BarcodeLib.TYPE.CODE128, Code128String, Color.Red, Color.White, 290, 120);
+                    //        e.Graphics.DrawImage(imageBarcode, 650, top + 30, 150, 60);
+                    //        e.Graphics.DrawString("***", new Font("Arial", 8), Brushes.Red, 650, top+15);
+                    //    }
+                    //    catch (Exception)
+                    //    {
+                    //        System.Windows.MessageBox.Show($"{SortedExpressGoods[counter].name_wares} - не коректні дані!", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    //    }
+                    //}
+
+                }
 
 
                 //e.Graphics.DrawString("Назва товару:", new Font("Arial", totalFontSize), Brushes.Black, left, top);
@@ -920,8 +951,101 @@ namespace PhotoCheck
                 top += 15;
                 if (counter < SortedExpressGoods.Count)
                     counter++;
-                
+
                 if (counter % 10 == 0)
+                {
+                    break;
+                }
+
+            }
+            if (counter < SortedExpressGoods.Count)
+            {
+                //Has more pages??  
+                e.HasMorePages = true;
+            }
+        }
+        public void PrintWeightListCAS(object sender, PrintPageEventArgs e)
+        {
+
+            var barcode = new BarcodeLib.Barcode();
+            int left = 20;
+            int top = 20;
+            int mainFontSize = 14;
+            int totalFontSize = 10;
+            int columnWidth = e.PageBounds.Width / 5;
+            int columnHeight = e.PageBounds.Height / 10;
+            int tmpcolumnWidth = columnWidth;
+            int tmpcolumnHeight = columnHeight;
+            int pagrWidth = e.PageBounds.Width;
+            int pageHeight = e.PageBounds.Height;
+            while (counter < SortedExpressGoods.Count)
+            {
+
+
+                //Pen myPen = new Pen(System.Drawing.Color.Red, 5);
+                //System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top, 200, 160);
+                //e.Graphics.DrawRectangle(myPen, myRectangle);
+                Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
+                top = 0;
+                for (int i = 0; i < 10; i++)
+                {
+                    left = 0;
+                    //Горизонтальна лінії
+                    e.Graphics.DrawLine(myPen, columnWidth, 0, columnWidth, pageHeight);
+                    columnWidth += tmpcolumnWidth;
+                    for (int j = 0; j < 5; j++)
+                    {
+                        //вертикальна
+                        e.Graphics.DrawLine(myPen, 0, columnHeight, pagrWidth, columnHeight);
+                        if (counter < SortedExpressGoods.Count)
+                        {
+                            if (SortedExpressGoods[counter].pathPhoto != null)
+                                e.Graphics.DrawImage(System.Drawing.Image.FromFile(SortedExpressGoods[counter].pathPhoto), left + 25, top + 8, 100, 100);
+                            SolidBrush myBrush = new SolidBrush(Color.Green);
+                            System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 15, top, 100, 20);
+                            e.Graphics.FillRectangle(myBrush, myRectangle);
+                            e.Graphics.DrawString(SortedExpressGoods[counter].articl, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
+                            left += tmpcolumnWidth;
+                            counter++;
+                            columnHeight += tmpcolumnHeight;
+                        }
+                        else break;
+
+                    }
+                    top += tmpcolumnHeight;
+
+                }
+                //Фото
+                //if (SortedExpressGoods[counter].pathPhoto != null)
+                //    e.Graphics.DrawImage(System.Drawing.Image.FromFile(SortedExpressGoods[counter].pathPhoto), left + 450, top + 10, 100, 100);
+
+
+
+
+                //e.Graphics.DrawString("Назва товару:", new Font("Arial", totalFontSize), Brushes.Black, left, top);
+                //e.Graphics.DrawString(SortedExpressGoods[counter].name_wares, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Italic), Brushes.Black, left, top += 14);
+                //e.Graphics.DrawString("Артикул:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
+
+                //SolidBrush myBrush = new SolidBrush(Color.Green);
+                //System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top += 14, 100, 20);
+                //e.Graphics.FillRectangle(myBrush, myRectangle);
+                //e.Graphics.DrawString(SortedExpressGoods[counter].articl, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
+                //e.Graphics.DrawString("Назва групи товарів:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
+                //e.Graphics.DrawString(SortedExpressGoods[counter].Name_Button, new Font("Arial", mainFontSize), Brushes.Black, left, top += 14);
+
+                //top += 20;
+
+
+               
+                
+                
+                
+                
+                top += 15;
+                //if (counter < SortedExpressGoods.Count)
+                //    counter++;
+
+                if (counter % 50 == 0)
                 {
                     break;
                 }

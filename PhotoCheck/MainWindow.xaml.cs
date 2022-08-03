@@ -40,6 +40,8 @@ namespace PhotoCheck
         public MainWindow()
         {
             InitializeComponent();
+            Uri iconUri = new Uri("pack://application:,,,/Spar.ico", UriKind.RelativeOrAbsolute);
+            this.Icon = BitmapFrame.Create(iconUri);
             PathPhotoTextBox.Text = pathPhoto;
             PathToPhotoTextBox.Text = pathToPhoto;
             var query2 = @"SELECT gw.code_group_wares AS Code_Direction ,name FROM dbo.GROUP_WARES gw WHERE gw.code_parent_group_wares IS null";
