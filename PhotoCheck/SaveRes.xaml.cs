@@ -16,6 +16,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using RadioButton = System.Windows.Controls.RadioButton;
 using Font = System.Drawing.Font;
+using System.Drawing.Text;
 
 namespace PhotoCheck
 {
@@ -34,7 +35,7 @@ namespace PhotoCheck
         List<SQLExpressGoods> SortedExpressGoods { get; set; }
         public string SelectedExpressGoodsCode { get; set; }
         public string SelectedExpressGoodsName { get; set; }
-        int current = 0;
+        int counter = 0;
         public bool isColumWrite { get; set; }
         public bool isExcelPath { get; set; }
         public bool isExcelOk
@@ -103,7 +104,7 @@ namespace PhotoCheck
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Вкажіть правильний шлях! {ex.Message}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error); 
+                System.Windows.MessageBox.Show($"Вкажіть правильний шлях! {ex.Message}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             photoInfos = new List<PhotoInfo>();
 
@@ -732,29 +733,43 @@ namespace PhotoCheck
             LinkToPhoto();
 
 
-            // объект для печати
-            PrintDocument printDocument = new PrintDocument();
-
-            // обработчик события печати
-            printDocument.PrintPage += PrintPageHandler;
-
-            // диалог настройки печати
-            System.Windows.Forms.PrintDialog printDialog = new System.Windows.Forms.PrintDialog();
-
-            // установка объекта печати для его настройки
-            printDialog.Document = printDocument;
 
 
-            var previewDlg = new PrintPreviewDialog();
+
+            //Create a PrintPreviewDialog object  
+            System.Windows.Forms.PrintDialog previewDlg = new System.Windows.Forms.PrintDialog();
             //Create a PrintDocument object  
             PrintDocument pd = new PrintDocument();
-            //Add print-page event handler  
-            pd.PrintPage +=  PrintPageHandler;
+            //Add print-page event handler
+            counter = 0;
+            pd.PrintPage += pd_PrintPage;
             //Set Document property of PrintPreviewDialog  
             previewDlg.Document = pd;
             //Display dialog  
-            previewDlg.Show();
+            //previewDlg.Show();
+            try
+            {
+                if (previewDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    previewDlg.Document.Print(); // печатаем
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
+
+
+            // объект для печати
+            //PrintDocument printDocument = new PrintDocument();
+
+            //// обработчик события печати
+            //printDocument.PrintPage += PrintPageHandler;
+
+            //// диалог настройки печати
+            //System.Windows.Forms.PrintDialog printDialog = new System.Windows.Forms.PrintDialog();
+
+            //// установка объекта печати для его настройки
+            //printDialog.Document = printDocument;
             // если в диалоге было нажато ОК
             //try
             //{
@@ -785,79 +800,137 @@ namespace PhotoCheck
             }
         }
         // обработчик события печати
-        void PrintPageHandler(object sender, PrintPageEventArgs e)
-        {
-            while (current!=10)
-            {
-                current++;
-                PrintPages(SortedExpressGoods, e);
-                
-            }
-            
+        //void PrintPageHandler(object sender, PrintPageEventArgs e)
+        //{
+        //    while (current != 10)
+        //    {
+        //        current++;
+        //        PrintPages(SortedExpressGoods, e);
+
+        //    }
+        //}
+        //void PrintPages(List<SQLExpressGoods> sortExpressGoods, PrintPageEventArgs e)
+        //{
+
+        //    var barcode = new BarcodeLib.Barcode();
+        //    int left = 20;
+        //    int top = 10;
+        //    int mainFontSize = 14;
+        //    int totalFontSize = 10;
+        //    int counter = 0;
+        //    System.Drawing.Image imageBarcode;
+        //    foreach (var expressGoods in sortExpressGoods)
+        //    {
+        //        //Pen myPen = new Pen(System.Drawing.Color.Red, 5);
+        //        //System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top, 200, 160);
+        //        //e.Graphics.DrawRectangle(myPen, myRectangle);
+
+        //        //Фото
+        //        if (expressGoods.pathPhoto != null)
+        //            e.Graphics.DrawImage(System.Drawing.Image.FromFile(expressGoods.pathPhoto), left + 350, top + 10, 100, 100);
+
+        //        if (expressGoods.bar_code != null && expressGoods.bar_code.Length == 13)
+        //        {
+        //            try
+        //            {
+        //                imageBarcode = barcode.Encode(BarcodeLib.TYPE.EAN13, expressGoods.bar_code, Color.Black, Color.White, 290, 120);
+        //                e.Graphics.DrawImage(imageBarcode, 650, top + 20, 150, 60);
+        //            }
+        //            catch (Exception)
+        //            {
+        //                System.Windows.MessageBox.Show($"{expressGoods.name_wares} - не правильний штрихкод: {expressGoods.bar_code}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+        //            }
+
+        //        }
 
 
-        }
-         void PrintPages(List<SQLExpressGoods> sortExpressGoods, PrintPageEventArgs e)
+        //        //e.Graphics.DrawString("Назва товару:", new Font("Arial", totalFontSize), Brushes.Black, left, top);
+        //        e.Graphics.DrawString(expressGoods.name_wares, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.Black, left, top += 14);
+        //        e.Graphics.DrawString("Артикул:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
+
+        //        SolidBrush myBrush = new SolidBrush(Color.Green);
+        //        System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top += 14, 90, 20);
+        //        e.Graphics.FillRectangle(myBrush, myRectangle);
+        //        e.Graphics.DrawString(expressGoods.articl, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
+        //        e.Graphics.DrawString("Назва групи товарів:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
+        //        e.Graphics.DrawString(expressGoods.Name_Button, new Font("Arial", mainFontSize), Brushes.Black, left, top += 14);
+
+        //        //top += 20;
+        //        Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
+        //        e.Graphics.DrawLine(myPen, 0, top + 23, 1000, top + 23);
+        //        top += 15;
+        //        counter++;
+        //        if (counter >= 11)
+        //        {
+        //            current = 0;
+        //            e.HasMorePages = true;
+        //        }
+        //    }
+        //}
+        
+        public void pd_PrintPage(object sender, PrintPageEventArgs e)
         {
-            
+
             var barcode = new BarcodeLib.Barcode();
             int left = 20;
-            int top = 10;
+            int top = 20;
             int mainFontSize = 14;
             int totalFontSize = 10;
-            int counter = 0;
-            System.Drawing.Image imageBarcode;
-            foreach (var expressGoods in sortExpressGoods)
+            while (counter < SortedExpressGoods.Count)
             {
+                System.Drawing.Image imageBarcode;
 
-                
                 //Pen myPen = new Pen(System.Drawing.Color.Red, 5);
                 //System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top, 200, 160);
                 //e.Graphics.DrawRectangle(myPen, myRectangle);
 
                 //Фото
-                if (expressGoods.pathPhoto != null)
-                    e.Graphics.DrawImage(System.Drawing.Image.FromFile(expressGoods.pathPhoto), left + 350, top + 10, 100, 100);
+                if (SortedExpressGoods[counter].pathPhoto != null)
+                    e.Graphics.DrawImage(System.Drawing.Image.FromFile(SortedExpressGoods[counter].pathPhoto), left + 450, top + 10, 100, 100);
 
-                if (expressGoods.bar_code != null && expressGoods.bar_code.Length == 13)
+                if (SortedExpressGoods[counter].bar_code != null && SortedExpressGoods[counter].bar_code.Length == 13)
                 {
                     try
                     {
-                        imageBarcode = barcode.Encode(BarcodeLib.TYPE.EAN13, expressGoods.bar_code, Color.Black, Color.White, 290, 120);
-                        e.Graphics.DrawImage(imageBarcode, 650, top + 20, 150, 60);
+                        imageBarcode = barcode.Encode(BarcodeLib.TYPE.EAN13, SortedExpressGoods[counter].bar_code, Color.Black, Color.White, 290, 120);
+                        e.Graphics.DrawImage(imageBarcode, 650, top + 30, 150, 60);
                     }
                     catch (Exception)
                     {
-                        System.Windows.MessageBox.Show($"{expressGoods.name_wares} - не правильний штрихкод: {expressGoods.bar_code}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+                        System.Windows.MessageBox.Show($"{SortedExpressGoods[counter].name_wares} - не правильний штрихкод: {SortedExpressGoods[counter].bar_code}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
 
                 }
 
 
                 //e.Graphics.DrawString("Назва товару:", new Font("Arial", totalFontSize), Brushes.Black, left, top);
-                e.Graphics.DrawString(expressGoods.name_wares, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.Black, left, top += 14);
+                e.Graphics.DrawString(SortedExpressGoods[counter].name_wares, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Italic), Brushes.Black, left, top += 14);
                 e.Graphics.DrawString("Артикул:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
 
                 SolidBrush myBrush = new SolidBrush(Color.Green);
-                System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top += 14, 90, 20);
+                System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top += 14, 100, 20);
                 e.Graphics.FillRectangle(myBrush, myRectangle);
-                e.Graphics.DrawString(expressGoods.articl, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
+                e.Graphics.DrawString(SortedExpressGoods[counter].articl, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
                 e.Graphics.DrawString("Назва групи товарів:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
-                e.Graphics.DrawString(expressGoods.Name_Button, new Font("Arial", mainFontSize), Brushes.Black, left, top += 14);
+                e.Graphics.DrawString(SortedExpressGoods[counter].Name_Button, new Font("Arial", mainFontSize), Brushes.Black, left, top += 14);
 
                 //top += 20;
                 Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
                 e.Graphics.DrawLine(myPen, 0, top + 23, 1000, top + 23);
                 top += 15;
-                counter++;
-                if (counter >= 11)
+                if (counter < SortedExpressGoods.Count)
+                    counter++;
+                
+                if (counter % 10 == 0)
                 {
-                    // current += 10;
-                    e.HasMorePages = true;
+                    break;
                 }
-                
 
-                
+            }
+            if (counter < SortedExpressGoods.Count)
+            {
+                //Has more pages??  
+                e.HasMorePages = true;
             }
         }
     }

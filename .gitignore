@@ -1,0 +1,9 @@
+bin
+obj
+/MOD/bin
+/MOD/obj
+/.vs
+/packages
+/PhotoCheck/bin
+/PhotoCheck/obj
+.DS_Store
