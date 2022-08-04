@@ -207,8 +207,8 @@
                             <Button Grid.Row="2" Width="100" Height="40" 
                                 Style="{StaticResource yelowButton}" Click="OpenToFilePathSaveCsv">Змінити</Button>
                         </StackPanel>
-                        <Button Grid.Row="2" Width="200" Height="40"
-                            Click="SaveCsvButton" Content="Зберегти файл">
+                        <Button Grid.Row="2" Width="250" Height="40"
+                            Click="SaveCsvButton" Content="Зберегти дані у файл">
 
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
@@ -228,6 +228,25 @@
                         </Button>
                         <Button Grid.Row="2" Width="200" Height="40"
                             Click="PrintExpressGoodsButton" Content="Друк макету">
+
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isSelectedExpressGoods, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding isSelectedExpressGoods, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Grid.Row="2" Width="250" Height="40"
+                            Click="PrintLoyoutCASButton" Content="Макет для ваг CAS" Visibility="Collapsed">
 
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">

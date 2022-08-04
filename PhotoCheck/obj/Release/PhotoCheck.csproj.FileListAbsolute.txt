@@ -1,6 +1,3 @@
-D:\Work\PhotoCheck\PhotoCheck\bin\Release\DocumentFormat.OpenXml.xml
-D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.application
-D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.pdb
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\PhotoCheck.exe.config
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\PhotoCheck.exe.manifest
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\PhotoCheck.application
@@ -22,6 +19,7 @@ D:\Work\PhotoCheck\PhotoCheck\bin\Release\System.Text.Json.dll
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\System.Threading.Tasks.Extensions.dll
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\System.ValueTuple.dll
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\Dapper.xml
+D:\Work\PhotoCheck\PhotoCheck\bin\Release\DocumentFormat.OpenXml.xml
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\Microsoft.Bcl.AsyncInterfaces.xml
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\Microsoft.WindowsAPICodePack.xml
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\Microsoft.WindowsAPICodePack.Shell.xml
@@ -52,5 +50,7 @@ D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.Properties.Resources.resour
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.GenerateResource.cache
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.CoreCompileInputs.cache
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.exe.manifest
+D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.application
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.CopyComplete
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.exe
+D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.pdb

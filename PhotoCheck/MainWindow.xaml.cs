@@ -383,6 +383,7 @@ namespace PhotoCheck
         public string articl { get; set; }
         public string pathPhoto { get; set; }
         public bool isPhotoPresent { get; set; }=false;
+        public bool IsWeight { get; set; }
         //public bool isPhotoPresent { get { return pathPhoto != null ? true : false; } }
 
 
