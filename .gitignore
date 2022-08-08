@@ -1,9 +1,10 @@
-bin
-obj
+/bin
+/obj
 /MOD/bin
 /MOD/obj
 /.vs
 /packages
-/PhotoCheck/bin
-/PhotoCheck/obj
+PhotoCheck/bin
+PhotoCheck/obj
 .DS_Store
+PhotoCheck/bin/Debug/app.publish/PhotoCheck.exe

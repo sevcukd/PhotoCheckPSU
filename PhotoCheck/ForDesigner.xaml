@@ -246,7 +246,7 @@
                             </Button.Style>
                         </Button>
                         <Button Grid.Row="2" Width="250" Height="40"
-                            Click="PrintLoyoutCASButton" Content="Макет для ваг CAS" Visibility="Collapsed">
+                            Click="PrintLoyoutCASButton" Content="Макет для ваг CAS" Visibility="Visible">
 
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">

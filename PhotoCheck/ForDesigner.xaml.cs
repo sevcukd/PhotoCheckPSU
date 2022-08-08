@@ -987,11 +987,11 @@ namespace PhotoCheck
         {
             int left;
             int top;
-            int mainFontSize = 14;
+            int mainFontSize = 10;
             double waresImageWidth;
             double waresImageHeight;
-            int columnWidth = e.PageBounds.Width / 5;
-            int columnHeight = e.PageBounds.Height / 10;
+            int columnWidth = 715 / 5; //e.PageBounds.Width / 5;
+            int columnHeight = 1023 / 10; //e.PageBounds.Height / 10;
             int tmpcolumnWidth = columnWidth;
             int tmpcolumnHeight = columnHeight;
             int pagrWidth = e.PageBounds.Width;
@@ -1032,9 +1032,9 @@ namespace PhotoCheck
                                 e.Graphics.DrawImage(waresImage, left + 25, top + 8, Convert.ToInt32(waresImageWidth), Convert.ToInt32(waresImageHeight));
                             }
                             SolidBrush myBrush = new SolidBrush(Color.Green);
-                            System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 15, top, 100, 20);
+                            System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left+1, top+1, 140, 15);
                             e.Graphics.FillRectangle(myBrush, myRectangle);
-                            e.Graphics.DrawString(SortedExpressGoods[counter].articl, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
+                            e.Graphics.DrawString(SortedExpressGoods[counter].name_wares, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
                             left += tmpcolumnWidth;
                             counter++;
                         }
@@ -1074,6 +1074,8 @@ namespace PhotoCheck
             System.Windows.Forms.PrintDialog previewDlg = new System.Windows.Forms.PrintDialog();
             //Create a PrintDocument object  
             PrintDocument pd = new PrintDocument();
+
+            // 1 cm = 4.135 пунктів
             // A4 width: 827 Height: 1169
             //pd.DefaultPageSettings.PaperSize = new PaperSize("A3", 827, 584);
             counter = 0;
