@@ -80,13 +80,15 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-                <Border  Grid.Row="1" Padding="10"
+
+                <!--Робота з акційною газеткою-->
+                <Border  Grid.Row="1" Padding="10" Visibility="Visible"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
                     </Border.Effect>
                     <StackPanel>
- 
+
 
                         <TextBlock FontSize="20" TextWrapping="Wrap"
                                HorizontalAlignment="Center"
@@ -126,7 +128,8 @@
                     </StackPanel>
                 </Border>
 
-                <Border  Grid.Row="1" Padding="10"
+                <!--Пошук по коду або назві-->
+                <Border  Grid.Row="1" Padding="10" Visibility="Visible"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
@@ -175,14 +178,14 @@
 
 
                 <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                Text="Оберіть групу по якій буде проводитись відбір" FontWeight="Bold"/>
+                Text="Підказки для касирів" FontWeight="Bold"/>
                 <Border  Grid.Row="1" Padding="10"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
                     </Border.Effect>
                     <StackPanel Orientation="Vertical"  HorizontalAlignment="Center">
-                    <ItemsControl  Name="KasaListShow">
+                        <ItemsControl  Name="KasaListShow">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border  Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
@@ -198,7 +201,7 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                    
+
                         <TextBlock FontSize="20" Text="Шлях для збереження документу: " HorizontalAlignment="Center"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -245,31 +248,13 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Grid.Row="2" Width="250" Height="40"
-                            Click="PrintLoyoutCASButton" Content="Макет для ваг CAS" Visibility="Visible">
 
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding isSelectedExpressGoods, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
-                                            <Setter Property="IsEnabled" Value="True" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding isSelectedExpressGoods, RelativeSource={RelativeSource 
-                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
-                                            <Setter Property="IsEnabled" Value="False" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
                     </StackPanel>
                 </Border>
-                
-                
-                
-            <!--Тільки тимчасово-->
+
+
+
+                <!--Тільки тимчасово-->
                 <Border  Grid.Row="1" Padding="10" Visibility="Collapsed"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
@@ -306,8 +291,73 @@
                     </StackPanel>
                 </Border>
                 <!--Тільки тимчасово КІНЕЦЬ-->
-                
-                
+
+
+
+                <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Друк макету на ваги та цінників А3" FontWeight="Bold"/>
+                <Border  Grid.Row="1" Padding="10"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                    </Border.Effect>
+                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Center">
+                        <ItemsControl  Name="WeightGroupsShow">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border  Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" Width="400" >
+                                        <Border.Effect>
+                                            <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                                        </Border.Effect>
+                                        <Grid Margin="10,0,0,0">
+                                            <StackPanel Orientation="Vertical">
+                                                <RadioButton GroupName="radioListDirection" FontSize="18" Content="{Binding desc}" Checked="CheckWeightGroup"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Button Grid.Row="2" Width="250" Height="40"
+                            Click="PrintLoyoutCASButton" Content="Макет для ваг CAS" Visibility="Visible">
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isSelectedWeightGroup, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding isSelectedWeightGroup, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Grid.Row="2" Width="250" Height="40"
+                            Click="PrintPriceTagsButton" Content="Цінники А3" Visibility="Visible">
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isSelectedWeightGroup, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding isSelectedWeightGroup, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
             </StackPanel>
         </ScrollViewer>
     </Grid>

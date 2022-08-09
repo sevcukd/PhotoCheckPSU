@@ -33,9 +33,12 @@ namespace PhotoCheck
         public List<SQLKasaList> KasaList { get; set; }
         public List<SQLExpressGoods> ExpressGoods { get; set; }
         List<SQLExpressGoods> SortedExpressGoods { get; set; }
+        public List<SQLWeightGoods> WeightGoods { get; set; }
         public List<PhotoInfo> DuplicatePhotos { get; set; }
         public string SelectedExpressGoodsCode { get; set; }
         public string SelectedExpressGoodsName { get; set; }
+        public string SelectedWeightGroup { get; set; }
+        public List<SQLWeightGroups> WeightGroups { get; set; }
         int counter = 0;
         public bool isColumWrite { get; set; }
         public bool isExcelPath { get; set; }
@@ -59,6 +62,15 @@ namespace PhotoCheck
                 else return false;
             }
         }
+        public bool isSelectedWeightGroup
+        {
+            get
+            {
+                if (SelectedWeightGroup != null)
+                    return true;
+                else return false;
+            }
+        }
 
         public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl FROM dbo.Wares w "; //000148259
         public string query2 = @"SELECT _code, _CASH_place._Description FROM DW.dbo.V1C_DIM_OPTION_WPC _CASH_place";
@@ -69,6 +81,14 @@ namespace PhotoCheck
   JOIN DW.dbo.V1C_DIM_OPTION_WPC_FAST_WARES W ON o._IDRRef = W._Reference18850_IDRRef AND G.Order_Button_wares = W.Order_Button
   JOIN dw.dbo.Wares w1 ON w.Wares_RRef=w1._IDRRef
     WHERE o._Code=";
+        public string query4 = @"SELECT  code, [desc] FROM dbo.V1C_dim_GroupWeighingScale";
+        public string query5 = @"SELECT  
+w.code_wares AS CodeWares ,w.name_wares,w.articl,r.PLU,w.IsWeight
+FROM dbo.V1C_dim_GroupWeighingScale d
+JOIN dbo.V1C_reg_Nomen_GroupWeighingScale r ON d.Group_Weighing_Scale_RRef = r.Group_Weighing_Scale_RRef
+JOIN dw.dbo.Wares w ON nomen_RRef=w._IDRRef
+
+WHERE d.code=";
         public string varConectionString = @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=180;";
         public SqlConnection connection = null;
         public eTypeCommit TypeCommit { get; set; }
@@ -89,7 +109,10 @@ namespace PhotoCheck
             KasaList = connection.Query<SQLKasaList>(query2).ToList();
             KasaListShow.ItemsSource = KasaList;
 
-
+            // пошук груп ваг
+            WeightGroups = connection.Query<SQLWeightGroups>(query4).ToList();
+            WeightGroups = WeightGroups.OrderBy(n => n.desc).ToList();
+            WeightGroupsShow.ItemsSource = WeightGroups;
             //System.Windows.MessageBox.Show(listWares[0].articl);
             //FindPhotoToPath();
 
@@ -691,6 +714,24 @@ namespace PhotoCheck
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isSelectedExpressGoods"));
             }
         }
+        /// <summary>
+        /// RadioButton вибору групи ваг
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckWeightGroup(object sender, RoutedEventArgs e)
+        {
+            RadioButton ChBtn = sender as RadioButton;
+            if (ChBtn.DataContext is SQLWeightGroups)
+            {
+                SQLWeightGroups temp = ChBtn.DataContext as SQLWeightGroups;
+                if (ChBtn.IsChecked == true)
+                {
+                    SelectedWeightGroup = temp.code;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isSelectedWeightGroup"));
+            }
+        }
 
         private void OpenToFilePathSaveCsv(object sender, RoutedEventArgs e)
         {
@@ -786,7 +827,7 @@ namespace PhotoCheck
 
         }
 
-        public void LinkToPhoto()
+        public void LinkToPhoto()  //TMP - переробити в 1 метод без дублювання коду
         {
             foreach (var expressGoodsTMP in SortedExpressGoods)
             {
@@ -796,6 +837,20 @@ namespace PhotoCheck
                     {
                         expressGoodsTMP.isPhotoPresent = true;
                         expressGoodsTMP.pathPhoto = infoPhoto.photoPath;
+                        break;
+                    }
+                }
+            }
+        }
+        public void WeightLinkToPhoto()
+        {
+            foreach (var weightGoodsTMP in WeightGoods)
+            {
+                foreach (var infoPhoto in photoInfos)
+                {
+                    if (weightGoodsTMP.CodeWares == infoPhoto.photoName)
+                    {
+                        weightGoodsTMP.pathPhoto = infoPhoto.photoPath;
                         break;
                     }
                 }
@@ -987,7 +1042,7 @@ namespace PhotoCheck
         {
             int left;
             int top;
-            int mainFontSize = 10;
+            int mainFontSize = 8;
             double waresImageWidth;
             double waresImageHeight;
             int columnWidth = 715 / 5; //e.PageBounds.Width / 5;
@@ -996,29 +1051,27 @@ namespace PhotoCheck
             int tmpcolumnHeight = columnHeight;
             int pagrWidth = e.PageBounds.Width;
             int pageHeight = e.PageBounds.Height;
-            while (counter < SortedExpressGoods.Count)
+            Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
+
+
+
+            while (counter < WeightGoods.Count) //WeightGoods.Count
             {
-                Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
+
                 top = 0;
                 columnWidth = 0;
                 columnHeight = 0;
                 for (int i = 0; i < 10; i++)
                 {
                     left = 0;
-                    //Горизонтальна лінії
-                    e.Graphics.DrawLine(myPen, columnWidth, 0, columnWidth, pageHeight);
-                    //вертикальна
-                    e.Graphics.DrawLine(myPen, 0, columnHeight, pagrWidth, columnHeight);
-                    columnWidth += tmpcolumnWidth;
-                    columnHeight += tmpcolumnHeight;
+
                     for (int j = 0; j < 5; j++)
                     {
-
-                        if (counter < SortedExpressGoods.Count)
+                        if (counter < WeightGoods.Count)
                         {
-                            if (SortedExpressGoods[counter].pathPhoto != null)
+                            if (WeightGoods[counter].pathPhoto != null)
                             {
-                                System.Drawing.Image waresImage = System.Drawing.Image.FromFile(SortedExpressGoods[counter].pathPhoto);
+                                System.Drawing.Image waresImage = System.Drawing.Image.FromFile(WeightGoods[counter].pathPhoto);
                                 waresImageWidth = waresImage.Width;
                                 waresImageHeight = waresImage.Height;
                                 double coef = 0;
@@ -1031,10 +1084,17 @@ namespace PhotoCheck
 
                                 e.Graphics.DrawImage(waresImage, left + 25, top + 8, Convert.ToInt32(waresImageWidth), Convert.ToInt32(waresImageHeight));
                             }
-                            SolidBrush myBrush = new SolidBrush(Color.Green);
-                            System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left+1, top+1, 140, 15);
+                            SolidBrush myBrush = new SolidBrush(Color.White);
+                            //Для номера кнопки
+                            System.Drawing.Rectangle RectangleButtonPLU = new System.Drawing.Rectangle(left + 1, top + 1, 36, 30);
+                            e.Graphics.FillRectangle(myBrush, RectangleButtonPLU);
+                            //Назва
+                            System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 1, top + 85, 140, 15);
                             e.Graphics.FillRectangle(myBrush, myRectangle);
-                            e.Graphics.DrawString(SortedExpressGoods[counter].name_wares, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
+                            e.Graphics.DrawString(WeightGoods[counter].name_wares, new Font("Arial", mainFontSize), Brushes.Black, myRectangle);
+
+                            //Номер кнопки
+                            //e.Graphics.DrawString(WeightGoods[counter].PLU.ToString(), new Font("Arial", 20), Brushes.Black, left, top + 30);
                             left += tmpcolumnWidth;
                             counter++;
                         }
@@ -1043,15 +1103,23 @@ namespace PhotoCheck
                     top += tmpcolumnHeight;
 
                 }
-
-                //top += 15;
                 if (counter % 50 == 0)
                 {
                     break;
                 }
-
             }
-            if (counter < SortedExpressGoods.Count)
+            columnWidth = 0;
+            columnHeight = 0;
+            for (int i = 0; i < 11; i++)
+            {
+                //Горизонтальна лінії
+                e.Graphics.DrawLine(myPen, columnWidth, 0, columnWidth, pageHeight);
+                //вертикальна
+                e.Graphics.DrawLine(myPen, 0, columnHeight, pagrWidth, columnHeight);
+                columnWidth += tmpcolumnWidth;
+                columnHeight += tmpcolumnHeight;
+            }
+            if (counter < WeightGoods.Count)
             {
                 //Has more pages??  
                 e.HasMorePages = true;
@@ -1061,14 +1129,39 @@ namespace PhotoCheck
         private void PrintLoyoutCASButton(object sender, RoutedEventArgs e)
         {
             FindPhotoToPath();
+            List<SQLWeightGoods> WeightGoodsFromSort = new List<SQLWeightGoods>();
+            WeightGoods = new List<SQLWeightGoods>();
+            WeightGoodsFromSort = connection.Query<SQLWeightGoods>($"{query5}'{SelectedWeightGroup}'").ToList();
+            WeightGoodsFromSort = WeightGoodsFromSort.OrderBy(n => n.PLU).ToList();
+            //впорядкування по PLU
+            int j = 0;
+            int i = 1;
+            for (int k = 0; k < 2; k++)
+            {
 
-           // пошук всіх швидких товарів
-            ExpressGoods = connection.Query<SQLExpressGoods>($"{query3}'{SelectedExpressGoodsCode}'").ToList();
+                for (; i < 101; i++)
+                {
 
-            //сортування по групах
-            SortedExpressGoods = ExpressGoods.OrderBy(n => n.Name_Button).ToList();
+                    if (WeightGoodsFromSort.Count > i && WeightGoodsFromSort[j].PLU == i)
+                    {
+                        WeightGoods.Add(WeightGoodsFromSort[j]);
+                        j++;
+                    }
+                    else
+                    {
+                        WeightGoods.Add(new SQLWeightGoods { PLU = i, articl = "", code = "", name_wares = "" });
+                    }
+                    if (i % 5 == 0) // від 1 до 5, 11-15  ---- розділення на 2 сторінки
+                    {
+                        i += 5;
+                        j += 5;
+                    }
+                }
+                i = 6;
+                j = 5;
+            }
 
-            LinkToPhoto();
+            WeightLinkToPhoto();
 
             //Create a PrintPreviewDialog/PrintDialog object  
             System.Windows.Forms.PrintDialog previewDlg = new System.Windows.Forms.PrintDialog();
@@ -1079,6 +1172,7 @@ namespace PhotoCheck
             // A4 width: 827 Height: 1169
             //pd.DefaultPageSettings.PaperSize = new PaperSize("A3", 827, 584);
             counter = 0;
+
             pd.PrintPage += PrintWeightListCAS;
             //Set Document property of PrintPreviewDialog  
             previewDlg.Document = pd;
@@ -1113,7 +1207,7 @@ namespace PhotoCheck
             int countTMP = 0;
             foreach (var item in DuplicatePhotos)
             {
-                if (item.photoPath.Contains("png")) 
+                if (item.photoPath.Contains("png"))
                 {
                     countTMP++;
                     continue;
@@ -1124,6 +1218,123 @@ namespace PhotoCheck
                 }
             }
             MessageBox.Show(countTMP.ToString());
+        }
+        /// <summary>
+        /// Друк макету цінників А3 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PrintPriceTagsButton(object sender, RoutedEventArgs e)
+        {
+            FindPhotoToPath();
+            WeightGoods = connection.Query<SQLWeightGoods>($"{query5}'{SelectedWeightGroup}'").ToList();
+            WeightGoods = WeightGoods.OrderBy(n => n.PLU).ToList();
+            WeightLinkToPhoto();
+
+            //Create a PrintPreviewDialog/PrintDialog object  
+            System.Windows.Forms.PrintDialog previewDlg = new System.Windows.Forms.PrintDialog();
+            //Create a PrintDocument object  
+            PrintDocument pd = new PrintDocument();
+
+            // 1 cm = 4.135 пунктів
+            // A4 width: 827 Height: 1169
+            //pd.DefaultPageSettings.PaperSize = new PaperSize("A3", 827, 584);
+            counter = 0;
+
+            pd.PrintPage += PrintPriceTags;
+            //Set Document property of PrintPreviewDialog  
+            previewDlg.Document = pd;
+            //Display dialog  
+            //previewDlg.Show();
+            try
+            {
+                if (previewDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    previewDlg.Document.Print(); // печатаем
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void PrintPriceTags(object sender, PrintPageEventArgs e)
+        {
+            int left;
+            int top;
+            int mainFontSize = 24;
+            double waresImageWidth;
+            double waresImageHeight;
+            int columnWidth = e.PageBounds.Width;
+            int columnHeight = e.PageBounds.Height / 2;
+            int tmpcolumnWidth = columnWidth;
+            int tmpcolumnHeight = columnHeight;
+            int pagrWidth = e.PageBounds.Width;
+            int pageHeight = e.PageBounds.Height;
+            Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
+
+
+
+            while (counter < WeightGoods.Count) //WeightGoods.Count
+            {
+
+                top = 0;
+
+                left = 0;
+
+                for (int j = 0; j < 2; j++)
+                {
+                    if (counter < WeightGoods.Count)
+                    {
+                        if (WeightGoods[counter].pathPhoto != null)
+                        {
+                            System.Drawing.Image waresImage = System.Drawing.Image.FromFile(WeightGoods[counter].pathPhoto);
+                            waresImageWidth = waresImage.Width;
+                            waresImageHeight = waresImage.Height;
+                            double coef = 0;
+                            if (waresImageHeight > waresImageWidth)
+                                coef = 500 / waresImageHeight;
+                            else
+                                coef = 500 / waresImageWidth;
+                            waresImageHeight = waresImageHeight * coef;
+                            waresImageWidth = waresImageWidth * coef;
+
+                            e.Graphics.DrawImage(waresImage, left + 250, top + 8, Convert.ToInt32(waresImageWidth), Convert.ToInt32(waresImageHeight));
+                        }
+                        SolidBrush myBrush = new SolidBrush(Color.White);
+                        SolidBrush myGreenBrush = new SolidBrush(Color.Green);
+                        //Назва
+                        System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 1, top, 250, 150);
+                        e.Graphics.FillRectangle(myBrush, myRectangle);
+                        e.Graphics.DrawString(WeightGoods[counter].name_wares, new Font("Arial", mainFontSize), Brushes.Black, myRectangle);
+                        //Артикул
+                        System.Drawing.Rectangle ArticlRectangle = new System.Drawing.Rectangle(left + 1, top + columnHeight - 45, 210, 40);
+                        e.Graphics.FillRectangle(myGreenBrush, ArticlRectangle);
+                        e.Graphics.DrawString(WeightGoods[counter].articl, new Font("Arial", 30, System.Drawing.FontStyle.Bold), Brushes.White, ArticlRectangle);
+                        //Номер кнопки
+                        e.Graphics.DrawString($"№{WeightGoods[counter].PLU.ToString()}", new Font("Arial", 50), Brushes.Black, columnWidth - 220, top + columnHeight - 80);
+                        top += tmpcolumnHeight;
+                        counter++;
+                    }
+                    else break;
+                }
+
+
+
+                if (counter % 2 == 0)
+                {
+                    break;
+                }
+            }
+
+            //Розділювач
+            e.Graphics.DrawLine(myPen, 0, columnHeight, pagrWidth, columnHeight);
+
+
+            if (counter < WeightGoods.Count)
+            {
+                //Has more pages??  
+                e.HasMorePages = true;
+            }
         }
     }
 }

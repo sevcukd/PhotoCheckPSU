@@ -385,10 +385,22 @@ namespace PhotoCheck
         public bool isPhotoPresent { get; set; }=false;
         public bool IsWeight { get; set; }
         //public bool isPhotoPresent { get { return pathPhoto != null ? true : false; } }
-
-
     }
-    
+    public class SQLWeightGroups
+    {
+        public string code { get; set; }
+        public string desc { get; set; }
+    }
+    public class SQLWeightGoods
+    {
+        public string CodeWares { get; set; }
+        public string name_wares { get; set; }
+        public string articl { get; set; }
+        public string code { get; set; }
+        public int PLU { get; set; }
+        public string IsWeight { get; set; }
+        public string pathPhoto { get; set; }
+    }
     public class CodeGroup
     {
         public string Code_Direction { get; set; }
