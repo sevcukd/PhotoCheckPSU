@@ -1261,15 +1261,10 @@ WHERE d.code=";
         {
             int left;
             int top;
-            int mainFontSize = 24;
             double waresImageWidth;
             double waresImageHeight;
             int columnWidth = e.PageBounds.Width;
             int columnHeight = e.PageBounds.Height / 2;
-            int tmpcolumnWidth = columnWidth;
-            int tmpcolumnHeight = columnHeight;
-            int pagrWidth = e.PageBounds.Width;
-            int pageHeight = e.PageBounds.Height;
             Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
 
 
@@ -1298,21 +1293,21 @@ WHERE d.code=";
                             waresImageHeight = waresImageHeight * coef;
                             waresImageWidth = waresImageWidth * coef;
 
-                            e.Graphics.DrawImage(waresImage, left + 250, top + 8, Convert.ToInt32(waresImageWidth), Convert.ToInt32(waresImageHeight));
+                            e.Graphics.DrawImage(waresImage, left + 285, top + 8, Convert.ToInt32(waresImageWidth), Convert.ToInt32(waresImageHeight));
                         }
                         SolidBrush myBrush = new SolidBrush(Color.White);
                         SolidBrush myGreenBrush = new SolidBrush(Color.Green);
                         //Назва
-                        System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 1, top, 250, 150);
+                        System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 1, top+20, 280, 180);
                         e.Graphics.FillRectangle(myBrush, myRectangle);
-                        e.Graphics.DrawString(WeightGoods[counter].name_wares, new Font("Arial", mainFontSize), Brushes.Black, myRectangle);
+                        e.Graphics.DrawString(WeightGoods[counter].name_wares, new Font("Arial", 36), Brushes.Black, myRectangle);
                         //Артикул
-                        System.Drawing.Rectangle ArticlRectangle = new System.Drawing.Rectangle(left + 1, top + columnHeight - 45, 210, 40);
+                        System.Drawing.Rectangle ArticlRectangle = new System.Drawing.Rectangle(left + 1, top + columnHeight - 90, 350, 70);
                         e.Graphics.FillRectangle(myGreenBrush, ArticlRectangle);
-                        e.Graphics.DrawString(WeightGoods[counter].articl, new Font("Arial", 30, System.Drawing.FontStyle.Bold), Brushes.White, ArticlRectangle);
+                        e.Graphics.DrawString(WeightGoods[counter].articl, new Font("Arial", 50, System.Drawing.FontStyle.Bold), Brushes.White, ArticlRectangle);
                         //Номер кнопки
-                        e.Graphics.DrawString($"№{WeightGoods[counter].PLU.ToString()}", new Font("Arial", 50), Brushes.Black, columnWidth - 220, top + columnHeight - 80);
-                        top += tmpcolumnHeight;
+                        e.Graphics.DrawString(WeightGoods[counter].PLU.ToString(), new Font("Arial", 80, System.Drawing.FontStyle.Bold), Brushes.Black, columnWidth - 220, top + columnHeight - 125);
+                        top += columnHeight;
                         counter++;
                     }
                     else break;
@@ -1327,7 +1322,7 @@ WHERE d.code=";
             }
 
             //Розділювач
-            e.Graphics.DrawLine(myPen, 0, columnHeight, pagrWidth, columnHeight);
+            e.Graphics.DrawLine(myPen, 0, columnHeight, columnWidth, columnHeight);
 
 
             if (counter < WeightGoods.Count)
