@@ -19,7 +19,80 @@
         </Grid.RowDefinitions>
 
 
-        <ScrollViewer Grid.Row="0" Grid.Column="0" 
+        <!--Інструкція-->
+        <FlowDocumentScrollViewer FontSize="24"  Visibility="Visible" Name="HelpList"
+                                              IsToolBarVisible="True" Zoom="100"
+                                              ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+            <FlowDocument IsOptimalParagraphEnabled="True" IsHyphenationEnabled="True">
+                <Paragraph FontSize="40" TextAlignment="Center" >
+                    <Bold>Інструкція</Bold>
+                </Paragraph>
+                <Paragraph TextAlignment="Left">
+                    Для початку роботи з програмою потрібно вказати правильний каталог з фото в пункті !
+                    <Bold>"Шлях до фото*"</Bold>
+                    Для зміни каталогу можна натиснути кнопку
+                    <Bold>"Змінити"</Bold> , або прописати шлях вручну.
+                    <LineBreak/>
+
+                    <Bold>ВСІ ФОТО БУДУТЬ ПІДТЯГУВАТИСЬ З ОБРАНОГО КАТАЛОГУ ТОМУ ВІН ОБОВ'ЯЗКОВИЙ!!!</Bold>
+                    <LineBreak/>
+                </Paragraph>
+                <Paragraph TextAlignment="Left">
+                    <Bold>Робота з акційною газетою:</Bold>
+                    <LineBreak/>
+                    Вказуємо "шлях до ексель файла газетки" прописавши його вручну або обравши візуально натиснувши кнопку "Змінити" біля відповідного поля вводу.
+                    <LineBreak/>
+                    Вказуємо номер колонки в якому знаходяться коди товарів (за замовчуванням це 5 колонка)
+                    <LineBreak/>
+                    <Image Source="Images\Help\HelpArticl.png" Width="800" />
+                    <LineBreak/>
+                    після чого натискаємо кнопку
+                    <Bold>"Знайти фото"</Bold> і очікуємо доки програма знайде відповідні фото та інформацію про товар і виведе їх на екран.
+
+                </Paragraph>
+                <Paragraph TextAlignment="Left">
+                    <Bold>Пошук за кодом або артикулом:</Bold>
+                    <LineBreak/>
+                    Ввівши в відповідне поле код або артикул (можна вводити без нулів) і натиснувши відповідну кнопку "За кодом" або "За артикулом"
+                                на екрані з'явиться інформація про шуканий товар із його фото якщо воно присутнє.
+                </Paragraph>
+                <Paragraph TextAlignment="Left">
+                    <Bold>Шлях для копіювання фото на диск:</Bold>
+                    <LineBreak/>
+                    В даному пункті ви обираєте шлях за яким будуть копіюватись фото якщо ви натисните на відповідну кнопку в списку товарів.
+                    <Image Source="Images\Help\HelpCopyPhoto.png"  Width="800"/>
+                </Paragraph>
+                <Paragraph TextAlignment="Left">
+                    <Bold>Підказки для касирів:</Bold>
+                    <LineBreak/>
+                    В меню відображено перелік всіх груп кас на яких присутні швидкі товари. Знайдіть потрібну групу кас та поставте в відповідному полі галочку після чого стануть доступні кнопки:
+                    "Зберегти дані у файл" та "Друк макету".
+                    <LineBreak/>
+                    <Bold>"Зберегти дані у файл"</Bold> - створює та зберігає (за шляхом який ви обрали вище або за замовчуванням на диск D) список товарів які є в обраній 
+                    групі. В документі міститься інформація про: назва групи товарів, назва товару, код товару, артикул, штрих-код та чи присутнє фото для цого товару в початково
+                    обраному каталозі.
+                    <LineBreak/>
+                    <Bold>"Друк макету"</Bold> - відразу формує та відправляє на друк підказку для обраної групи кас.
+                    <LineBreak/>
+                    Щоб сформувати PDF-файл з обраної групи просто оберіть в переліку принтерів віртуальний принтер "Microsoft Print to PDF" який встановлений у всіх користувачів.
+                    <Image Source="Images\Help\HelpPrint.png" Width="800" />
+                </Paragraph>
+                <Paragraph TextAlignment="Left">
+                    <Bold>Друк макету на ваги та цінників А5</Bold>
+                    <LineBreak/>
+                    Аналогічно попередньому пункту обираєте групу ваг зі списку після чого стають доступні кнопки "Макет для ваг CAS" та "Цінники А5".
+                    <LineBreak/>
+                    <Bold>"Макет для ваг CAS"</Bold> - аналогічно попередньому формує та відправляє на друк впорядкований макет з назвою та фото вагового товару.
+                    Якщо в каталозі з фото який ви обирали з самого початку відсутні дані фото тоді на макет вивидеться лише назва. Якщо зустрічаються пусті клітинки без фото та назви - значить
+                    на дану кнопку не призначено ніякого товару - зверніться до менеджера магазину який відповідає за даний продукт.
+                    <LineBreak/>
+                    <Bold>"Цінники А5"</Bold> - формує та відправляє на друк макет для підвісних цінників з назвою, артикулом та номером кнопки на вазі.
+                </Paragraph>
+            </FlowDocument>
+        </FlowDocumentScrollViewer>
+
+        <ScrollViewer Grid.Row="0" Grid.Column="0"  Visibility="Collapsed"
                 VerticalScrollBarVisibility="Auto" Name="SV_WaresList" Panel.ZIndex="2">
             <ItemsControl  Name="WaresList">
                 <ItemsControl.ItemTemplate>
@@ -82,6 +155,8 @@
                 </Border>
 
                 <!--Робота з акційною газеткою-->
+                <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Робота з акційною газетою" FontWeight="Bold"/>
                 <Border  Grid.Row="1" Padding="10" Visibility="Visible"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
@@ -129,6 +204,8 @@
                 </Border>
 
                 <!--Пошук по коду або назві-->
+                <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Пошук за кодом або артикулом" FontWeight="Bold"/>
                 <Border  Grid.Row="1" Padding="10" Visibility="Visible"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
@@ -158,7 +235,8 @@
                 </Border>
 
 
-
+                <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Шлях для копіювання фото на диск" FontWeight="Bold"/>
                 <Border  Grid.Row="1" Padding="10"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
@@ -295,7 +373,7 @@
 
 
                 <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                Text="Друк макету на ваги та цінників А3" FontWeight="Bold"/>
+                Text="Друк макету на ваги та цінників А5" FontWeight="Bold"/>
                 <Border  Grid.Row="1" Padding="10"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
@@ -338,7 +416,7 @@
                             </Button.Style>
                         </Button>
                         <Button Grid.Row="2" Width="250" Height="40"
-                            Click="PrintPriceTagsButton" Content="Цінники А3" Visibility="Visible">
+                            Click="PrintPriceTagsButton" Content="Цінники А5" Visibility="Visible">
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
                                     <Setter Property="IsEnabled" Value="True"/>

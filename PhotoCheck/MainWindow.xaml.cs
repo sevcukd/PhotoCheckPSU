@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Dapper;
 using System.Data.SqlClient;
-using Microsoft.Win32;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -35,6 +34,15 @@ namespace PhotoCheck
         public string varConectionString = @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=180;";
         public SqlConnection connection = null;
         public string SerchCode { get; set; }
+        public bool isSelectedGroupWares
+        {
+            get
+            {
+                if (SerchCode != null)
+                    return true;
+                else return false;
+            }
+        }
 
 
         public MainWindow()
@@ -150,6 +158,7 @@ namespace PhotoCheck
 
 
                 else temp.Show = false;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isSelectedGroupWares"));
                 // MessageBox.Show(temp.Show.ToString());
             }
         }
@@ -157,10 +166,14 @@ namespace PhotoCheck
         private void OpenFilePath(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
-            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            //System.Windows.Forms.DialogResult result = dialog.ShowDialog();
             //MessageBox.Show(dialog.SelectedPath);
-            pathPhoto = dialog.SelectedPath + @"\";
-            PathPhotoTextBox.Text = pathPhoto;
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                pathPhoto = dialog.SelectedPath + @"\";
+                PathPhotoTextBox.Text = pathPhoto;
+            }
+            
             //OpenFileDialog openFileDialog = new OpenFileDialog();
             //if (openFileDialog.ShowDialog() == true)
             //    MessageBox.Show(openFileDialog.FileName);
@@ -230,6 +243,7 @@ namespace PhotoCheck
                 catch (Exception)
                 {
                     MessageBox.Show("Оберіть групу товарів!", "Увага!!!", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
 
 
@@ -237,9 +251,11 @@ namespace PhotoCheck
             catch (Exception)
             {
                 MessageBox.Show("Не правильно вказаний шлях!", "Увага!!!", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
-
+            HelpList.Visibility = Visibility.Collapsed;
+            SV_WaresList.Visibility = Visibility.Visible;
 
         }
         public static ImageSource LoadImage(string fileName)
@@ -261,9 +277,13 @@ namespace PhotoCheck
         private void OpenToFilePath(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
-            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            pathToPhoto = dialog.SelectedPath + @"\";
-            PathToPhotoTextBox.Text = pathToPhoto;
+            //System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                pathToPhoto = dialog.SelectedPath + @"\";
+                PathToPhotoTextBox.Text = pathToPhoto;
+            }
+            
         }
         void WaitCollect(int pMs = 1000)
         {

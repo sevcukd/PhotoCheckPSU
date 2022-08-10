@@ -16,21 +16,29 @@
                         <BulletDecorator Background="White" Cursor="Hand">
                             <BulletDecorator.Bullet>
                                 <Grid Height="20" Width="20">
-                                    --><!--Define size of the Bullet-->
-                                    <!--The two borders--><!--
+                                    -->
+        <!--Define size of the Bullet-->
+        <!--The two borders-->
+        <!--
                                     <Border Name="RadioOuter" Background="Transparent" BorderBrush="Black" BorderThickness="2" CornerRadius="2" />
                                     <Border CornerRadius="0" Margin="4" Name="RadioMark" Background="Red" Visibility="Hidden" />
                                 </Grid>
                             </BulletDecorator.Bullet>
-                            --><!--Text element--><!--
+                            -->
+        <!--Text element-->
+        <!--
                             <TextBlock Margin="3,1,0,0" Foreground="Black" FontFamily="Calibri" FontSize="20">
                         <ContentPresenter />
                             </TextBlock>
                         </BulletDecorator>
-                        --><!--If item is checked, trigger the visibility of the mark--><!--
+                        -->
+        <!--If item is checked, trigger the visibility of the mark-->
+        <!--
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="true">
-                                --><!--If item is checked, trigger the visibility of the mark and change the color of the selected bullet into a darker gray for better highlighting--><!--
+                                -->
+        <!--If item is checked, trigger the visibility of the mark and change the color of the selected bullet into a darker gray for better highlighting-->
+        <!--
                                 <Setter TargetName="RadioMark" Property="Visibility" Value="Visible"/>
                                 <Setter TargetName="RadioOuter" Property="BorderBrush" Value="#FFADADAD" />
                             </Trigger>
@@ -91,9 +99,71 @@
                 </GridView>
             </ListView.View>
         </ListView>-->
+        <!--Інструкція-->
+        <FlowDocumentScrollViewer FontSize="24"  Visibility="Visible" Name="HelpList"
+                                              IsToolBarVisible="True" Zoom="100"
+                                              ScrollViewer.VerticalScrollBarVisibility="Auto">
 
+            <FlowDocument IsOptimalParagraphEnabled="True" IsHyphenationEnabled="True">
+                <Paragraph FontSize="40" TextAlignment="Center" >
+                    <Bold>Інструкція</Bold>
+                </Paragraph>
+                <Paragraph TextAlignment="Left">
+                    Для початку роботи з програмою потрібно вказати правильний каталог з фото в пункті
+                    <Bold>"Оберіть основний каталог фото"</Bold>
+                    Для зміни каталогу можна натиснути кнопку
+                    <Bold>"Змінити"</Bold> , або прописати шлях вручну.
+                    <LineBreak/>
 
-        <ScrollViewer Grid.Row="0" Grid.Column="0" 
+                    <Bold>ВСІ ФОТО БУДУТЬ ПІДТЯГУВАТИСЬ З ОБРАНОГО КАТАЛОГУ ТОМУ ВІН ОБОВ'ЯЗКОВИЙ!!!</Bold>
+                    <LineBreak/>
+                </Paragraph>
+
+                <Paragraph TextAlignment="Left">
+                    <Bold>Оберіть групу по якій буде проводитись відбір:</Bold>
+                    <LineBreak/>
+                    В меню виведено групи товарів - поставте галочку на групі з якою будете працювати.
+                    <LineBreak/>
+                    Після вибору групи та правильно вказаного каталогу з фото натисніть кнопку "Знайти фото" та зачекайте доки програма знайде
+                    товари з даної групи та всі фото які відповідають товару. Як тільки закінчиться пошук - на екрані з'явиться список фото з даними про товари які їм відповідають.
+                    Якщо список пустий - це значить, що в обраному каталозі нема жодного фото яке б відповідало хоча б одному із товарів
+                    в обраній групі.
+                    <LineBreak/>
+                    <Image Source="Images\Help\HelpGoodPhoto.png"  />
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Bold>В списку товарів є 4 галочки які потрібні для перевірки на відповідність фото до його назви.</Bold>
+                    <LineBreak/>
+                    *Залишити фото - дана галочка підтверджує, що фото правильне (відповідає назві) і в подальшому перемістить фото з каталогу де ці фото перевіряються до фотобанку.
+                    <LineBreak/>
+                    *Невірне фото - вказує на те, що фото не відповідає назві або зображена стара упаковка. При подальшому підтвердженні фото лишиться в тому самому каталозі але на початок його назви
+                    додасться опис проблеми (як приклад - "Невірне фото000181548")
+                    <LineBreak/>
+                    *Пропустити - якщо ви поки не знаєте чи це фото 100% правильне але випадково поставили галочку тоді можете перемкнути на цей пункт і з фото ніяких дій не буде виконуватись
+                </Paragraph>
+
+                <Paragraph TextAlignment="Left">
+                    <Bold>Оберіть куди перемістити затверджені фото:</Bold>
+                    <LineBreak/>
+                    За замовчуванням затверджені фото будть переміщуватись в фотобанк в розділ з фото високої якості, але це поле можна змінити вручну прописавши шлях або натиснувши кнопку
+                    "Змінити" біля відповідного поля.
+                    <LineBreak/>
+                </Paragraph>
+                <Paragraph TextAlignment="Left">
+                    <Bold>Кнопка "Підтвердити"</Bold>
+                    <LineBreak/>
+                    "Пройшовшись" по всіх товарах і поставивши або пропустивши галочки біля них - натисніть кнопку "Підтвердити" після чого програма перемістить затверджені фото в вище
+                    обраний каталог і переназве неправильні фото для їх подальшої ідентифікації та заміни на нові.
+                </Paragraph>
+                <Paragraph TextAlignment="Left">
+                    <Bold>Для дизайнера</Bold>
+                    <LineBreak/>
+                    Натиснувши кнопку "Перейти" відкриється інше вікно для допомоги в роботі дизайнера.
+                </Paragraph>
+            </FlowDocument>
+        </FlowDocumentScrollViewer>
+
+        <ScrollViewer Grid.Row="0" Grid.Column="0"  Visibility="Collapsed"
                 VerticalScrollBarVisibility="Auto" Name="SV_WaresList" Panel.ZIndex="2">
             <ItemsControl  Name="WaresList">
                 <ItemsControl.ItemTemplate>
@@ -123,10 +193,10 @@
                                         <TextBlock Text="Артикул: " FontSize="24"/>
                                         <TextBox Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding Articl}" />
                                     </StackPanel>
-                                    
+
                                     <RadioButton GroupName="{Binding kodeWares}"  FontSize="20" Content="Залишити фото" Checked="CheckRadiobutton"/>
                                     <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірне фото" Checked="CheckRadiobutton"/>
-                                    <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірний код" Checked="CheckRadiobutton"/>
+                                    <!--<RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Невірний код" Checked="CheckRadiobutton"/>-->
                                     <RadioButton GroupName="{Binding kodeWares}" FontSize="20" Content="Пропустити" Checked="CheckRadiobutton"/>
                                 </StackPanel>
                             </Grid>
@@ -191,7 +261,23 @@
                              FontSize="20" Height="30" Width="300"></TextBox>
                                 <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenFilePath">Змінити</Button>
                             </StackPanel>
-                            <Button Grid.Row="2" Width="150" Height="40" Style="{StaticResource yelowButton}" Click="RunButton">Знайти фото</Button>
+                            <Button Grid.Row="2" Width="150" Height="40"  Click="RunButton" Content="Знайти фото">
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding isSelectedGroupWares, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding isSelectedGroupWares, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="IsEnabled" Value="False" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
                     </Border>
                     <Border  Grid.Row="1" Padding="10"
@@ -208,7 +294,23 @@
                              FontSize="20" Height="30" Width="300"></TextBox>
                                 <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePath">Змінити</Button>
                             </StackPanel>
-                            <Button Grid.Row="2" Width="150" Height="40" Style="{StaticResource greenButton}" Click="MovePhotoButton" >Підтвердити</Button>
+                            <Button Grid.Row="2" Width="150" Height="40"  Click="MovePhotoButton"  Content="Підтвердити">
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding isSelectedGroupWares, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                                <Setter Property="IsEnabled" Value="True" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding isSelectedGroupWares, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                                <Setter Property="IsEnabled" Value="False" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
                     </Border>
                     <Border  Grid.Row="1" Padding="10"
@@ -220,7 +322,7 @@
                             <TextBlock FontSize="18" TextWrapping="Wrap"
                                HorizontalAlignment="Center" FontWeight="Bold"
                                Text="Для дизайнера"/>
-                            <Button Style="{StaticResource greenButton}" Content="Знайти фото" 
+                            <Button Style="{StaticResource greenButton}" Content="Перейти" 
                                     Width="200" Height="40"
                                     Margin="10" Click="CopyPhoto"/>
                         </StackPanel>

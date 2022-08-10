@@ -121,6 +121,7 @@ WHERE d.code=";
 
         private void FindPhotoToPath()
         {
+            photoInfos = new List<PhotoInfo>();
             string[] files = null;
             try
             {
@@ -129,8 +130,9 @@ WHERE d.code=";
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show($"Вкажіть правильний шлях! {ex.Message}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
-            photoInfos = new List<PhotoInfo>();
+
 
 
 
@@ -147,14 +149,19 @@ WHERE d.code=";
                     System.Windows.MessageBox.Show(ex.Message);
                 }
             }
+            HelpList.Visibility = Visibility.Collapsed;
+            SV_WaresList.Visibility = Visibility.Visible;
 
         }
         private void OpenToFilePath(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            pathToPhoto = dialog.SelectedPath + @"\";
-            PathToPhotoTextBox.Text = pathToPhoto;
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                pathToPhoto = dialog.SelectedPath + @"\";
+                PathToPhotoTextBox.Text = pathToPhoto;
+            }
         }
 
         private void OpenToFilePathExel(object sender, RoutedEventArgs e)
@@ -162,17 +169,20 @@ WHERE d.code=";
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Excel file (*.xlsx)|*.xlsx;*.XLSM;*.XLTX;*.XLS;*.XLT;*.xlsb|All files (*.*)|*.*";
             openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            openFileDialog.ShowDialog();
-            try
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                pathToExel = Path.GetFullPath(openFileDialog.FileName);
-            }
-            catch (Exception)
-            {
-            }
 
-            //System.Windows.MessageBox.Show(pathToExel, "Message", MessageBoxButton.OK, MessageBoxImage.Information);
-            PathToExelTextBox.Text = pathToExel;
+                try
+                {
+                    pathToExel = Path.GetFullPath(openFileDialog.FileName);
+                }
+                catch (Exception)
+                {
+                }
+
+                //System.Windows.MessageBox.Show(pathToExel, "Message", MessageBoxButton.OK, MessageBoxImage.Information);
+                PathToExelTextBox.Text = pathToExel;
+            }
 
         }
 
@@ -294,7 +304,7 @@ WHERE d.code=";
                                 {
                                     Wares dataUser = new Wares()
                                     {
-                                        photoPath = "Spar.jpg",
+                                        photoPath = "Images\\Spar.jpg",
                                         photoFullName = photo.photoFullName,
                                         kodeWares = item.code_wares,
                                         nameWares = item.name_wares,
@@ -417,7 +427,7 @@ WHERE d.code=";
                         {
                             Wares dataUser = new Wares()
                             {
-                                photoPath = "Spar.jpg",
+                                photoPath = "Images\\Spar.jpg",
                                 photoFullName = photo.photoFullName,
                                 kodeWares = item.code_wares,
                                 nameWares = item.name_wares,
@@ -513,7 +523,7 @@ WHERE d.code=";
                         {
                             Wares dataUser = new Wares()
                             {
-                                photoPath = "Spar.jpg",
+                                photoPath = "Images\\Spar.jpg",
                                 photoFullName = photo.photoFullName,
                                 kodeWares = item.code_wares,
                                 nameWares = item.name_wares,
@@ -555,7 +565,8 @@ WHERE d.code=";
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            CopyPhotoPath.Text = dialog.SelectedPath + @"\";
+            if (result == System.Windows.Forms.DialogResult.OK)
+                CopyPhotoPath.Text = dialog.SelectedPath + @"\";
         }
 
         private void ChangeArticl(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -737,7 +748,8 @@ WHERE d.code=";
         {
             var dialog = new FolderBrowserDialog();
             DialogResult result = dialog.ShowDialog();
-            SaveCsvPath.Text = dialog.SelectedPath + @"\";
+            if (result == System.Windows.Forms.DialogResult.OK)
+                SaveCsvPath.Text = dialog.SelectedPath + @"\";
         }
 
         private void SaveCsvButton(object sender, RoutedEventArgs e)
@@ -1298,7 +1310,7 @@ WHERE d.code=";
                         SolidBrush myBrush = new SolidBrush(Color.White);
                         SolidBrush myGreenBrush = new SolidBrush(Color.Green);
                         //Назва
-                        System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 1, top+20, 280, 180);
+                        System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 1, top + 20, 280, 180);
                         e.Graphics.FillRectangle(myBrush, myRectangle);
                         e.Graphics.DrawString(WeightGoods[counter].name_wares, new Font("Arial", 36), Brushes.Black, myRectangle);
                         //Артикул

@@ -259,10 +259,22 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Spar.jpg" />
+    <Resource Include="Images\Spar.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Spar.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Help\HelpArticl.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Help\HelpCopyPhoto.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Help\HelpPrint.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Help\HelpGoodPhoto.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
