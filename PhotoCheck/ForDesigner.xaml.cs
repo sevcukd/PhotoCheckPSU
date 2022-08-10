@@ -123,18 +123,22 @@ WHERE d.code=";
         {
             photoInfos = new List<PhotoInfo>();
             string[] files = null;
-            try
+            if (Directory.Exists(pathToPhoto))
             {
                 files = System.IO.Directory.GetFiles(pathToPhoto);
             }
-            catch (Exception ex)
+            else
             {
-                System.Windows.MessageBox.Show($"Вкажіть правильний шлях! {ex.Message}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show($"Вказаний шлях відсутній або ви не маєте прав доступу до каталогу!", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
 
 
+            if (files.Length<=0)
+            {
+                MessageBox.Show("В обраному каталозі немає жодного файлу");
+            }
 
             for (int i = 0; i < files.Length; i++)
             {
@@ -812,31 +816,6 @@ WHERE d.code=";
             {
                 System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-
-
-            // объект для печати
-            //PrintDocument printDocument = new PrintDocument();
-
-            //// обработчик события печати
-            //printDocument.PrintPage += PrintPageHandler;
-
-            //// диалог настройки печати
-            //System.Windows.Forms.PrintDialog printDialog = new System.Windows.Forms.PrintDialog();
-
-            //// установка объекта печати для его настройки
-            //printDialog.Document = printDocument;
-            // если в диалоге было нажато ОК
-            //try
-            //{
-            //    if (printDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            //        printDialog.Document.Print(); // печатаем
-            //}
-            //catch (Exception ex)
-            //{
-            //    System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
-
         }
 
         public void LinkToPhoto()  //TMP - переробити в 1 метод без дублювання коду
@@ -868,74 +847,7 @@ WHERE d.code=";
                 }
             }
         }
-        // обработчик события печати
-        //void PrintPageHandler(object sender, PrintPageEventArgs e)
-        //{
-        //    while (current != 10)
-        //    {
-        //        current++;
-        //        PrintPages(SortedExpressGoods, e);
-
-        //    }
-        //}
-        //void PrintPages(List<SQLExpressGoods> sortExpressGoods, PrintPageEventArgs e)
-        //{
-
-        //    var barcode = new BarcodeLib.Barcode();
-        //    int left = 20;
-        //    int top = 10;
-        //    int mainFontSize = 14;
-        //    int totalFontSize = 10;
-        //    int counter = 0;
-        //    System.Drawing.Image imageBarcode;
-        //    foreach (var expressGoods in sortExpressGoods)
-        //    {
-        //        //Pen myPen = new Pen(System.Drawing.Color.Red, 5);
-        //        //System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top, 200, 160);
-        //        //e.Graphics.DrawRectangle(myPen, myRectangle);
-
-        //        //Фото
-        //        if (expressGoods.pathPhoto != null)
-        //            e.Graphics.DrawImage(System.Drawing.Image.FromFile(expressGoods.pathPhoto), left + 350, top + 10, 100, 100);
-
-        //        if (expressGoods.bar_code != null && expressGoods.bar_code.Length == 13)
-        //        {
-        //            try
-        //            {
-        //                imageBarcode = barcode.Encode(BarcodeLib.TYPE.EAN13, expressGoods.bar_code, Color.Black, Color.White, 290, 120);
-        //                e.Graphics.DrawImage(imageBarcode, 650, top + 20, 150, 60);
-        //            }
-        //            catch (Exception)
-        //            {
-        //                System.Windows.MessageBox.Show($"{expressGoods.name_wares} - не правильний штрихкод: {expressGoods.bar_code}", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
-        //            }
-
-        //        }
-
-
-        //        //e.Graphics.DrawString("Назва товару:", new Font("Arial", totalFontSize), Brushes.Black, left, top);
-        //        e.Graphics.DrawString(expressGoods.name_wares, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.Black, left, top += 14);
-        //        e.Graphics.DrawString("Артикул:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
-
-        //        SolidBrush myBrush = new SolidBrush(Color.Green);
-        //        System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top += 14, 90, 20);
-        //        e.Graphics.FillRectangle(myBrush, myRectangle);
-        //        e.Graphics.DrawString(expressGoods.articl, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
-        //        e.Graphics.DrawString("Назва групи товарів:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
-        //        e.Graphics.DrawString(expressGoods.Name_Button, new Font("Arial", mainFontSize), Brushes.Black, left, top += 14);
-
-        //        //top += 20;
-        //        Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
-        //        e.Graphics.DrawLine(myPen, 0, top + 23, 1000, top + 23);
-        //        top += 15;
-        //        counter++;
-        //        if (counter >= 11)
-        //        {
-        //            current = 0;
-        //            e.HasMorePages = true;
-        //        }
-        //    }
-        //}
+        
 
         public void pd_PrintPage(object sender, PrintPageEventArgs e)
         {
@@ -950,11 +862,6 @@ WHERE d.code=";
             while (counter < SortedExpressGoods.Count)
             {
                 System.Drawing.Image imageBarcode;
-
-                //Pen myPen = new Pen(System.Drawing.Color.Red, 5);
-                //System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top, 200, 160);
-                //e.Graphics.DrawRectangle(myPen, myRectangle);
-
                 //Фото
                 if (SortedExpressGoods[counter].pathPhoto != null)
                 {
@@ -1002,25 +909,10 @@ WHERE d.code=";
                             System.Windows.MessageBox.Show($"{SortedExpressGoods[counter].name_wares} - не коректні дані!", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
-                    //else
-                    //{
-                    //    string Code128String = Convert.ToInt32(SortedExpressGoods[counter].articl).ToString();
-                    //    try
-                    //    {
-                    //        imageBarcode = barcode.Encode(BarcodeLib.TYPE.CODE128, Code128String, Color.Red, Color.White, 290, 120);
-                    //        e.Graphics.DrawImage(imageBarcode, 650, top + 30, 150, 60);
-                    //        e.Graphics.DrawString("***", new Font("Arial", 8), Brushes.Red, 650, top+15);
-                    //    }
-                    //    catch (Exception)
-                    //    {
-                    //        System.Windows.MessageBox.Show($"{SortedExpressGoods[counter].name_wares} - не коректні дані!", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
-                    //    }
-                    //}
 
                 }
 
 
-                //e.Graphics.DrawString("Назва товару:", new Font("Arial", totalFontSize), Brushes.Black, left, top);
                 e.Graphics.DrawString(SortedExpressGoods[counter].name_wares, new Font("Arial", mainFontSize, System.Drawing.FontStyle.Italic), Brushes.Black, left, top += 14);
                 e.Graphics.DrawString("Артикул:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
 
@@ -1031,7 +923,6 @@ WHERE d.code=";
                 e.Graphics.DrawString("Назва групи товарів:", new Font("Arial", totalFontSize), Brushes.Black, left, top += 25);
                 e.Graphics.DrawString(SortedExpressGoods[counter].Name_Button, new Font("Arial", mainFontSize), Brushes.Black, left, top += 14);
 
-                //top += 20;
                 Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
                 e.Graphics.DrawLine(myPen, 0, top + 23, 1000, top + 23);
                 top += 15;
@@ -1182,7 +1073,7 @@ WHERE d.code=";
 
             // 1 cm = 4.135 пунктів
             // A4 width: 827 Height: 1169
-            //pd.DefaultPageSettings.PaperSize = new PaperSize("A3", 827, 584);
+            //pd.DefaultPageSettings.PaperSize = new PaperSize("A5", 827, 584);
             counter = 0;
 
             pd.PrintPage += PrintWeightListCAS;

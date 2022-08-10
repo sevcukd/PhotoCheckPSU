@@ -129,16 +129,13 @@ namespace PhotoCheck
                 switch (rbtn.Content.ToString())
                 {
                     case "Залишити фото":
-                        temp.savePhotoStatus = 0;
+                        temp.savePhotoStatus = PhotoStatus.GoodPhoto;
                         break;
                     case "Невірне фото":
-                        temp.savePhotoStatus = 1;
-                        break;
-                    case "Невірний код":
-                        temp.savePhotoStatus = 2;
+                        temp.savePhotoStatus = PhotoStatus.BedPhoto;
                         break;
                     default:
-                        temp.savePhotoStatus = 3;
+                        temp.savePhotoStatus = PhotoStatus.Miss;
                         break;
                 }
             }
@@ -313,29 +310,26 @@ namespace PhotoCheck
             //}
             //WaresList.ItemsSource = ListWares2;
             //ListWares.Clear();
+            if(ListWares==null) return;
             foreach (var ware in ListWares)
             {
 
                 try
                 {
+                    FileInfo file = new FileInfo(ware.photoPath);
                     switch (ware.savePhotoStatus)
                     {
 
-                        case 0: // перемітити - добре фото
-                            FileInfo file = new FileInfo(ware.photoPath);
+                        case PhotoStatus.GoodPhoto: // переміcити - добре фото
+                            
                             //MessageBox.Show(pathToPhoto + ware.photoFullName);
                             file.MoveTo(pathToPhoto + ware.photoFullName);
                             //File.Move(ware.photoPath, pathToPhoto+ware.photoFullName);
                             break;
-                        case 1: // невірне фото
-                            FileInfo file2 = new FileInfo(ware.photoPath);
-                            file2.MoveTo(pathPhoto + "невірне фото" + file2.Name);
+                        case PhotoStatus.BedPhoto: // невірне фото
+                            file.MoveTo(pathPhoto + "невірне фото" + file.Name);
                             break;
-                        case 2: // невірний код
-                            FileInfo file3 = new FileInfo(ware.photoPath);
-                            file3.MoveTo(pathPhoto + "невірний код" + file3.Name);
-                            break;
-                        case 3: // нічого не робити)))
+                        case PhotoStatus.Miss: // нічого не робити)))
                             
                             break;
                     }
@@ -436,13 +430,19 @@ namespace PhotoCheck
         public string kodeWares { get; set; }
         public string nameWares { get; set; }
         public string Articl { get; set; }
-        public int savePhotoStatus { get; set; } = 4; // 0-лишити фото; 1-невірне фото; 2-невірний код
+        public PhotoStatus savePhotoStatus { get; set; } = PhotoStatus.Miss; // 0-лишити фото; 1-невірне фото; 2-невірний код
 
         ~Wares()
         {
             //MessageBox.Show("by!");
         }
 
+    }
+    public enum PhotoStatus
+    {
+        GoodPhoto,
+        BedPhoto,
+        Miss
     }
     public class PhotoInfo
     {
