@@ -123,10 +123,12 @@
                                         <TextBox Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding Articl}" />
                                     </StackPanel>
 
-                                    <Button Content="Копіювати фото в буфер"  Style="{StaticResource yelowButton}"
+                                    <Button Content="Копіювати фото в буфер" Height="45" Style="{StaticResource yelowButton}"
                                             Click="CopyPhoto"/>
-                                    <Button Content="Копіювати фото на диск"  Style="{StaticResource yelowButton}"
+                                    <Button Content="Копіювати фото на диск" Height="45" Style="{StaticResource yelowButton}"
                                             Click="CopyPhotoToRepository"/>
+                                    <Button Content="Друк макету А5"  Height="45" Style="{StaticResource yelowButton}"
+                                            Click="PrintOnePriceTagsButton"/>
                                 </StackPanel>
                             </Grid>
                         </Border>

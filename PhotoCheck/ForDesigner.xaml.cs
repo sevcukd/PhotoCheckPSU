@@ -17,6 +17,7 @@ using System.Drawing.Printing;
 using RadioButton = System.Windows.Controls.RadioButton;
 using Font = System.Drawing.Font;
 using MessageBox = System.Windows.Forms.MessageBox;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace PhotoCheck
 {
@@ -135,7 +136,7 @@ WHERE d.code=";
 
 
 
-            if (files.Length<=0)
+            if (files.Length <= 0)
             {
                 MessageBox.Show("В обраному каталозі немає жодного файлу");
             }
@@ -847,7 +848,7 @@ WHERE d.code=";
                 }
             }
         }
-        
+
 
         public void pd_PrintPage(object sender, PrintPageEventArgs e)
         {
@@ -1209,7 +1210,8 @@ WHERE d.code=";
                         e.Graphics.FillRectangle(myGreenBrush, ArticlRectangle);
                         e.Graphics.DrawString(WeightGoods[counter].articl, new Font("Arial", 50, System.Drawing.FontStyle.Bold), Brushes.White, ArticlRectangle);
                         //Номер кнопки
-                        e.Graphics.DrawString(WeightGoods[counter].PLU.ToString(), new Font("Arial", 80, System.Drawing.FontStyle.Bold), Brushes.Black, columnWidth - 220, top + columnHeight - 125);
+                        if (WeightGoods[counter].PLU != 0)
+                            e.Graphics.DrawString(WeightGoods[counter].PLU.ToString(), new Font("Arial", 80, System.Drawing.FontStyle.Bold), Brushes.Black, columnWidth - 220, top + columnHeight - 125);
                         top += columnHeight;
                         counter++;
                     }
@@ -1232,6 +1234,54 @@ WHERE d.code=";
             {
                 //Has more pages??  
                 e.HasMorePages = true;
+            }
+        }
+
+        private void PrintOnePriceTagsButton(object sender, RoutedEventArgs e)
+        {
+
+            System.Windows.Controls.Button btn = sender as System.Windows.Controls.Button;
+            if (btn.DataContext is Wares)
+            {
+                Wares temp = btn.DataContext as Wares;
+                WeightGoods = new List<SQLWeightGoods>();
+                SQLWeightGoods item = new SQLWeightGoods()
+                {
+                    CodeWares = temp.kodeWares,
+                    name_wares = temp.nameWares,
+                    articl = temp.Articl,
+                    code = temp.kodeWares,
+                    PLU = 0,
+                    pathPhoto = temp.photoPath,
+
+                };
+                WeightGoods.Add(item);
+            }
+
+
+            //Create a PrintPreviewDialog/PrintDialog object  
+            System.Windows.Forms.PrintDialog previewDlg = new System.Windows.Forms.PrintDialog();
+            //Create a PrintDocument object  
+            PrintDocument pd = new PrintDocument();
+
+            // 1 cm = 4.135 пунктів
+            // A4 width: 827 Height: 1169
+            //pd.DefaultPageSettings.PaperSize = new PaperSize("A3", 827, 584);
+            counter = 0;
+
+            pd.PrintPage += PrintPriceTags;
+            //Set Document property of PrintPreviewDialog  
+            previewDlg.Document = pd;
+            //Display dialog  
+            //previewDlg.Show();
+            try
+            {
+                if (previewDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    previewDlg.Document.Print(); // печатаем
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
