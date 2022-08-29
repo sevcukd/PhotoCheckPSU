@@ -127,7 +127,9 @@
                                             Click="CopyPhoto"/>
                                     <Button Content="Копіювати фото на диск" Height="45" Style="{StaticResource yelowButton}"
                                             Click="CopyPhotoToRepository"/>
-                                    <Button Content="Друк макету А5"  Height="45" Style="{StaticResource yelowButton}"
+                                    <Button Content="Друк макету А5" Name="PrintA5" Height="45" Style="{StaticResource yelowButton}"
+                                            Click="PrintOnePriceTagsButton"/>
+                                    <Button Content="Друк макету А4" Name="PrintA4" Height="45" Style="{StaticResource yelowButton}"
                                             Click="PrintOnePriceTagsButton"/>
                                 </StackPanel>
                             </Grid>
@@ -222,6 +224,11 @@
                         <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" >
                             <TextBlock FontSize="20" Text="Артикул: " HorizontalAlignment="Center"/>
                             <TextBox x:Name="ArtclWaresTextBox" 
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock FontSize="20" Text="Штрихкод: " HorizontalAlignment="Center"/>
+                            <TextBox x:Name="BarcodeWaresTextBox" 
                              FontSize="20" Height="30" Width="300"></TextBox>
                         </StackPanel>
                         <TextBlock FontSize="20" x:Name="NameFindWaresTextBloc" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="5"/>
@@ -373,7 +380,7 @@
                 <!--Тільки тимчасово КІНЕЦЬ-->
 
 
-
+                <!--Друк макету на ваги та цінників А5-->
                 <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
                 Text="Друк макету на ваги та цінників А5" FontWeight="Bold"/>
                 <Border  Grid.Row="1" Padding="10"
@@ -417,7 +424,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Grid.Row="2" Width="250" Height="40"
+                        <Button Grid.Row="2" Width="250" Height="40" x:Name="PrintListWeightA5"
                             Click="PrintPriceTagsButton" Content="Цінники А5" Visibility="Visible">
                             <Button.Style>
                                 <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
@@ -435,6 +442,46 @@
                                 </Style>
                             </Button.Style>
                         </Button>
+                        <Button Grid.Row="2" Width="250" Height="40" x:Name="PrintListWeightA4"
+                            Click="PrintPriceTagsButton" Content="Цінники А4" Visibility="Visible">
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isSelectedWeightGroup, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding isSelectedWeightGroup, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+
+                <!--звіт з асотриментної матриці-->
+                <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Звіт по відсутнім фото з асортиментної матриці" FontWeight="Bold"/>
+                <Border  Grid.Row="1" Padding="10" Visibility="Visible"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox x:Name="SaveAssortmentMatrixPath" 
+                             FontSize="20" Height="30" Width="300" >D:\</TextBox>
+                            <Button Grid.Row="2" Width="100" Height="40" 
+                                Style="{StaticResource yelowButton}" Click="OpenToFilePathSaveAssortmentMatrix">Змінити</Button>
+                        </StackPanel>
+                        <Button Content="Сформувати звіт" Width="250" Height="40"
+                            Style="{StaticResource yelowButton}" 
+                            Click="ClickReportAssortmentMatrix"/>
                     </StackPanel>
                 </Border>
 

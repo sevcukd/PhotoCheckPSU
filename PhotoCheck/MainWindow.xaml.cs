@@ -13,6 +13,8 @@ using System.Threading;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.ComponentModel;
+using PhotoCheck.SQL;
+using PhotoCheck.Models;
 
 namespace PhotoCheck
 {
@@ -362,93 +364,5 @@ namespace PhotoCheck
             SaveRes save = new SaveRes(photoInfos);
             save.Show();
         }
-    }
-
-
-
-
-    public enum eTypeCommit
-    {
-        Auto,
-        Manual
-    }
-
-
-    public class SQLWares
-    {
-        public string code_wares { get; set; }
-        public string name_wares { get; set; }
-        public string Code_Direction { get; set; }
-        public string articl { get; set; }
-    }
-    public class SQLKasaList
-    {
-        public string _code { get; set; }
-        public string _Description { get; set; }
-    }
-    public class SQLExpressGoods
-    {
-        public string Order_Button { get; set; }
-        public string bar_code {get; set; }
-        public string Name_Button { get; set; }
-        public string code_wares { get; set; }
-        public string CodeWares { get; set; }
-        public string name_wares { get; set; }
-        public string articl { get; set; }
-        public string pathPhoto { get; set; }
-        public bool isPhotoPresent { get; set; }=false;
-        public bool IsWeight { get; set; }
-        //public bool isPhotoPresent { get { return pathPhoto != null ? true : false; } }
-    }
-    public class SQLWeightGroups
-    {
-        public string code { get; set; }
-        public string desc { get; set; }
-    }
-    public class SQLWeightGoods
-    {
-        public string CodeWares { get; set; }
-        public string name_wares { get; set; }
-        public string articl { get; set; }
-        public string code { get; set; }
-        public int PLU { get; set; }
-        public string IsWeight { get; set; }
-        public string pathPhoto { get; set; }
-    }
-    public class CodeGroup
-    {
-        public string Code_Direction { get; set; }
-        public string name { get; set; }
-        public bool Show { get; set; }
-    }
-    public class Wares
-    {
-
-        public ImageSource photo { get; set; }
-        public string photoPath { get; set; }
-        public string photoFullName { get; set; }
-        public string kodeWares { get; set; }
-        public string nameWares { get; set; }
-        public string Articl { get; set; }
-        public PhotoStatus savePhotoStatus { get; set; } = PhotoStatus.Miss; // 0-лишити фото; 1-невірне фото; 2-невірний код
-
-        ~Wares()
-        {
-            //MessageBox.Show("by!");
-        }
-
-    }
-    public enum PhotoStatus
-    {
-        GoodPhoto,
-        BedPhoto,
-        Miss
-    }
-    public class PhotoInfo
-    {
-        public string photoName { get; set; }
-        public string photoPath { get; set; }
-
-        public string photoFullName { get; set; }
     }
 }

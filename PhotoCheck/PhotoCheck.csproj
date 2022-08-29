@@ -141,6 +141,16 @@
     <Compile Include="ForDesigner.xaml.cs">
       <DependentUpon>ForDesigner.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\CodeGroup.cs" />
+    <Compile Include="Models\Enums.cs" />
+    <Compile Include="Models\PhotoInfo.cs" />
+    <Compile Include="Models\Wares.cs" />
+    <Compile Include="SQL\SQLAssortmentMatrix.cs" />
+    <Compile Include="SQL\SQLExpressGoods.cs" />
+    <Compile Include="SQL\SQLKasaList.cs" />
+    <Compile Include="SQL\SQLWares.cs" />
+    <Compile Include="SQL\SQLWeightGoods.cs" />
+    <Compile Include="SQL\SQLWeightGroups.cs" />
     <Page Include="FindPhoto.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -275,6 +285,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Help\HelpGoodPhoto.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Weight.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

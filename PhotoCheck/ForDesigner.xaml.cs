@@ -18,6 +18,8 @@ using RadioButton = System.Windows.Controls.RadioButton;
 using Font = System.Drawing.Font;
 using MessageBox = System.Windows.Forms.MessageBox;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+using PhotoCheck.SQL;
+using PhotoCheck.Models;
 
 namespace PhotoCheck
 {
@@ -73,7 +75,7 @@ namespace PhotoCheck
             }
         }
 
-        public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl FROM dbo.Wares w "; //000148259
+        public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl, w.IsWeight FROM dbo.Wares w "; //000148259
         public string query2 = @"SELECT _code, _CASH_place._Description FROM DW.dbo.V1C_DIM_OPTION_WPC _CASH_place";
         public string query3 = @"SELECT  g.Order_Button , g.Name_Button, w1.code_wares AS CodeWares ,w1.name_wares,w1.articl,
   (SELECT max(bc.bar_code)  FROM barcode bc WHERE bc.code_wares=w1.code_wares) AS bar_code,w1.IsWeight
@@ -90,23 +92,33 @@ JOIN dbo.V1C_reg_Nomen_GroupWeighingScale r ON d.Group_Weighing_Scale_RRef = r.G
 JOIN dw.dbo.Wares w ON nomen_RRef=w._IDRRef
 
 WHERE d.code=";
+        //асортиментна матриця
+        public string query6 = @"SELECT   
+  DISTINCT dn.code , dn.[desc] AS name ,dn.articul, is_weight,barcodes,barcode_last
+  FROM sqlsrv2.for_cubes.dbo.fact_deficit_surplus  ds
+  JOIN  sqlsrv2.for_cubes.dbo.dimen_nomen dn ON   dn.nomen_id= ds.nomen_id 
+WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
+
         public string varConectionString = @"Server=10.1.0.22;Database=DW;Uid=dwreader;Pwd=DW_Reader;Connect Timeout=180;";
         public SqlConnection connection = null;
         public eTypeCommit TypeCommit { get; set; }
         public List<PhotoInfo> photoInfos { get; set; }
         public List<PhotoInfo> photoArtcl { get; set; }
+        public List<SQLAssortmentMatrix> AssortmentMatrix { get; set; }
         public SaveRes(List<PhotoInfo> photo)
         {
             InitializeComponent();
 
-            //MessageBox.Show(ListWares[0].Articl);
+
             PathToPhotoTextBox.Text = pathToPhoto;
             PathToExelTextBox.Text = pathToExel;
-
+            //підключення до бази
             TypeCommit = eTypeCommit.Auto;
             connection = new SqlConnection(varConectionString);
             connection.Open();
+            //список всіх товарів з 1С
             listWares = connection.Query<SQLWares>(query1).ToList();
+            //список груп кас швидких товарів
             KasaList = connection.Query<SQLKasaList>(query2).ToList();
             KasaListShow.ItemsSource = KasaList;
 
@@ -114,8 +126,9 @@ WHERE d.code=";
             WeightGroups = connection.Query<SQLWeightGroups>(query4).ToList();
             WeightGroups = WeightGroups.OrderBy(n => n.desc).ToList();
             WeightGroupsShow.ItemsSource = WeightGroups;
-            //System.Windows.MessageBox.Show(listWares[0].articl);
-            //FindPhotoToPath();
+            //Збір інформаціїї про фото
+            FindPhotoToPath();
+
 
         }
 
@@ -193,9 +206,10 @@ WHERE d.code=";
 
         private void FindPhoto(object sender, RoutedEventArgs e)
         {
+            //FindPhotoToPath();
             ListWares = new ObservableCollection<Wares>();
 
-            FindPhotoToPath();
+
 
             //System.Windows.MessageBox.Show(photoInfos.Count().ToString());
 
@@ -240,37 +254,42 @@ WHERE d.code=";
 
                 for (int i = 0; i < strArray.Length; i++)
                 {
-                    int temp = strArray[i].Length;
-                    switch (temp)
+                    if (int.TryParse(strArray[i], out int res))
                     {
-                        case 8:
-                            break;
-                        case 7:
-                            strArray[i] = "0" + strArray[i];
-                            break;
-                        case 6:
-                            strArray[i] = "00" + strArray[i];
-                            break;
-                        case 5:
-                            strArray[i] = "000" + strArray[i];
-                            break;
-                        case 4:
-                            strArray[i] = "0000" + strArray[i];
-                            break;
-                        case 3:
-                            strArray[i] = "00000" + strArray[i];
-                            break;
-                        case 2:
-                            strArray[i] = "000000" + strArray[i];
-                            break;
-                        case 1:
-                            strArray[i] = "0000000" + strArray[i];
-                            break;
-
-                        default:
-                            strArray[i] = strArray[i].Substring(temp - 8);
-                            break;
+                        strArray[i] = res.ToString("D8");
                     }
+                    
+                    //int temp = strArray[i].Length;
+                    //switch (temp)
+                    //{
+                    //    case 8:
+                    //        break;
+                    //    case 7:
+                    //        strArray[i] = "0" + strArray[i];
+                    //        break;
+                    //    case 6:
+                    //        strArray[i] = "00" + strArray[i];
+                    //        break;
+                    //    case 5:
+                    //        strArray[i] = "000" + strArray[i];
+                    //        break;
+                    //    case 4:
+                    //        strArray[i] = "0000" + strArray[i];
+                    //        break;
+                    //    case 3:
+                    //        strArray[i] = "00000" + strArray[i];
+                    //        break;
+                    //    case 2:
+                    //        strArray[i] = "000000" + strArray[i];
+                    //        break;
+                    //    case 1:
+                    //        strArray[i] = "0000000" + strArray[i];
+                    //        break;
+
+                    //    default:
+                    //        strArray[i] = strArray[i].Substring(temp - 8);
+                    //        break;
+                    //}
                 }
                 //System.Windows.MessageBox.Show(strArray[0]);
 
@@ -357,7 +376,7 @@ WHERE d.code=";
 
         private void FindPhotoBuCode(object sender, RoutedEventArgs e)
         {
-            FindPhotoToPath();
+            //FindPhotoToPath();
             ListWares = new ObservableCollection<Wares>();
             ListWares.Clear();
 
@@ -369,38 +388,40 @@ WHERE d.code=";
                 System.Windows.MessageBox.Show("Введіть код!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            switch (temp)
-            {
-                case 9:
-                    break;
-                case 8:
-                    CodeWaresTextBox.Text = "0" + CodeWaresTextBox.Text;
-                    break;
-                case 7:
-                    CodeWaresTextBox.Text = "00" + CodeWaresTextBox.Text;
-                    break;
-                case 6:
-                    CodeWaresTextBox.Text = "000" + CodeWaresTextBox.Text;
-                    break;
-                case 5:
-                    CodeWaresTextBox.Text = "0000" + CodeWaresTextBox.Text;
-                    break;
-                case 4:
-                    CodeWaresTextBox.Text = "00000" + CodeWaresTextBox.Text;
-                    break;
-                case 3:
-                    CodeWaresTextBox.Text = "000000" + CodeWaresTextBox.Text;
-                    break;
-                case 2:
-                    CodeWaresTextBox.Text = "0000000" + CodeWaresTextBox.Text;
-                    break;
-                case 1:
-                    CodeWaresTextBox.Text = "00000000" + CodeWaresTextBox.Text;
-                    break;
-                default:
-                    CodeWaresTextBox.Text = CodeWaresTextBox.Text.Substring(temp - 9);
-                    break;
-            }
+            if (int.TryParse(CodeWaresTextBox.Text, out int res))
+                CodeWaresTextBox.Text = res.ToString("D9");
+            //switch (temp)
+            //{
+            //    case 9:
+            //        break;
+            //    case 8:
+            //        CodeWaresTextBox.Text = "0" + CodeWaresTextBox.Text;
+            //        break;
+            //    case 7:
+            //        CodeWaresTextBox.Text = "00" + CodeWaresTextBox.Text;
+            //        break;
+            //    case 6:
+            //        CodeWaresTextBox.Text = "000" + CodeWaresTextBox.Text;
+            //        break;
+            //    case 5:
+            //        CodeWaresTextBox.Text = "0000" + CodeWaresTextBox.Text;
+            //        break;
+            //    case 4:
+            //        CodeWaresTextBox.Text = "00000" + CodeWaresTextBox.Text;
+            //        break;
+            //    case 3:
+            //        CodeWaresTextBox.Text = "000000" + CodeWaresTextBox.Text;
+            //        break;
+            //    case 2:
+            //        CodeWaresTextBox.Text = "0000000" + CodeWaresTextBox.Text;
+            //        break;
+            //    case 1:
+            //        CodeWaresTextBox.Text = "00000000" + CodeWaresTextBox.Text;
+            //        break;
+            //    default:
+            //        CodeWaresTextBox.Text = CodeWaresTextBox.Text.Substring(temp - 9);
+            //        break;
+            //}
 
 
 
@@ -422,6 +443,7 @@ WHERE d.code=";
                                 kodeWares = item.code_wares,
                                 nameWares = item.name_wares,
                                 Articl = item.articl,
+                                IsWeight = item.IsWeight,
 
                             };
                             ListWares.Add(dataUser);
@@ -437,6 +459,7 @@ WHERE d.code=";
                                 kodeWares = item.code_wares,
                                 nameWares = item.name_wares,
                                 Articl = item.articl,
+                                IsWeight = item.IsWeight,
 
                             };
                             ListWares.Add(dataUser);
@@ -454,7 +477,7 @@ WHERE d.code=";
 
         private void FindPhotoByActcl(object sender, RoutedEventArgs e)
         {
-            FindPhotoToPath();
+            //FindPhotoToPath();
             ListWares = new ObservableCollection<Wares>();
             ListWares.Clear();
 
@@ -466,36 +489,38 @@ WHERE d.code=";
                 System.Windows.MessageBox.Show("Введіть артикул!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            switch (temp)
-            {
-                case 8:
-                    break;
-                case 7:
-                    ArtclWaresTextBox.Text = "0" + ArtclWaresTextBox.Text;
-                    break;
-                case 6:
-                    ArtclWaresTextBox.Text = "00" + ArtclWaresTextBox.Text;
-                    break;
-                case 5:
-                    ArtclWaresTextBox.Text = "000" + ArtclWaresTextBox.Text;
-                    break;
-                case 4:
-                    ArtclWaresTextBox.Text = "0000" + ArtclWaresTextBox.Text;
-                    break;
-                case 3:
-                    ArtclWaresTextBox.Text = "00000" + ArtclWaresTextBox.Text;
-                    break;
-                case 2:
-                    CodeWaresTextBox.Text = "000000" + ArtclWaresTextBox.Text;
-                    break;
-                case 1:
-                    ArtclWaresTextBox.Text = "0000000" + ArtclWaresTextBox.Text;
-                    break;
+            if (int.TryParse(ArtclWaresTextBox.Text, out int res))
+                ArtclWaresTextBox.Text = res.ToString("D8");
+            //switch (temp)
+            //{
+            //    case 8:
+            //        break;
+            //    case 7:
+            //        ArtclWaresTextBox.Text = "0" + ArtclWaresTextBox.Text;
+            //        break;
+            //    case 6:
+            //        ArtclWaresTextBox.Text = "00" + ArtclWaresTextBox.Text;
+            //        break;
+            //    case 5:
+            //        ArtclWaresTextBox.Text = "000" + ArtclWaresTextBox.Text;
+            //        break;
+            //    case 4:
+            //        ArtclWaresTextBox.Text = "0000" + ArtclWaresTextBox.Text;
+            //        break;
+            //    case 3:
+            //        ArtclWaresTextBox.Text = "00000" + ArtclWaresTextBox.Text;
+            //        break;
+            //    case 2:
+            //        CodeWaresTextBox.Text = "000000" + ArtclWaresTextBox.Text;
+            //        break;
+            //    case 1:
+            //        ArtclWaresTextBox.Text = "0000000" + ArtclWaresTextBox.Text;
+            //        break;
 
-                default:
-                    ArtclWaresTextBox.Text = ArtclWaresTextBox.Text.Substring(temp - 8);
-                    break;
-            }
+            //    default:
+            //        ArtclWaresTextBox.Text = ArtclWaresTextBox.Text.Substring(temp - 8);
+            //        break;
+            //}
 
 
 
@@ -518,6 +543,7 @@ WHERE d.code=";
                                 kodeWares = item.code_wares,
                                 nameWares = item.name_wares,
                                 Articl = item.articl,
+                                IsWeight = item.IsWeight,
 
                             };
                             ListWares.Add(dataUser);
@@ -533,6 +559,7 @@ WHERE d.code=";
                                 kodeWares = item.code_wares,
                                 nameWares = item.name_wares,
                                 Articl = item.articl,
+                                IsWeight = item.IsWeight,
 
                             };
                             ListWares.Add(dataUser);
@@ -544,6 +571,7 @@ WHERE d.code=";
                 }
             }
             WaresList.ItemsSource = ListWares;
+
         }
 
         private void CopyPhotoToRepository(object sender, RoutedEventArgs e)
@@ -602,6 +630,8 @@ WHERE d.code=";
         private void PathToPhotoCanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             pathToPhoto = PathToPhotoTextBox.Text;
+            if (Directory.Exists(pathToPhoto))
+                FindPhotoToPath();
         }
 
         private void ClickPhotoPathToCode(object sender, RoutedEventArgs e)
@@ -656,37 +686,38 @@ WHERE d.code=";
 
             for (int i = 0; i < photoArtcl.Count; i++)
             {
-                int temp = photoArtcl[i].photoName.Length;
-                switch (temp)
-                {
-                    case 8:
-                        break;
-                    case 7:
-                        photoArtcl[i].photoName = "0" + photoArtcl[i].photoName;
-                        break;
-                    case 6:
-                        photoArtcl[i].photoName = "00" + photoArtcl[i].photoName;
-                        break;
-                    case 5:
-                        photoArtcl[i].photoName = "000" + photoArtcl[i].photoName;
-                        break;
-                    case 4:
-                        photoArtcl[i].photoName = "0000" + photoArtcl[i].photoName;
-                        break;
-                    case 3:
-                        photoArtcl[i].photoName = "00000" + photoArtcl[i].photoName;
-                        break;
-                    case 2:
-                        photoArtcl[i].photoName = "000000" + photoArtcl[i].photoName;
-                        break;
-                    case 1:
-                        photoArtcl[i].photoName = "0000000" + photoArtcl[i].photoName;
-                        break;
+                photoArtcl[i].photoName = Convert.ToInt32(photoArtcl[i].photoName).ToString("D8");
+                //int temp = photoArtcl[i].photoName.Length;
+                //switch (temp)
+                //{
+                //    case 8:
+                //        break;
+                //    case 7:
+                //        photoArtcl[i].photoName = "0" + photoArtcl[i].photoName;
+                //        break;
+                //    case 6:
+                //        photoArtcl[i].photoName = "00" + photoArtcl[i].photoName;
+                //        break;
+                //    case 5:
+                //        photoArtcl[i].photoName = "000" + photoArtcl[i].photoName;
+                //        break;
+                //    case 4:
+                //        photoArtcl[i].photoName = "0000" + photoArtcl[i].photoName;
+                //        break;
+                //    case 3:
+                //        photoArtcl[i].photoName = "00000" + photoArtcl[i].photoName;
+                //        break;
+                //    case 2:
+                //        photoArtcl[i].photoName = "000000" + photoArtcl[i].photoName;
+                //        break;
+                //    case 1:
+                //        photoArtcl[i].photoName = "0000000" + photoArtcl[i].photoName;
+                //        break;
 
-                    default:
-                        photoArtcl[i].photoName = photoArtcl[i].photoName.Substring(temp - 8);
-                        break;
-                }
+                //    default:
+                //        photoArtcl[i].photoName = photoArtcl[i].photoName.Substring(temp - 8);
+                //        break;
+                //}
 
 
             }
@@ -756,10 +787,14 @@ WHERE d.code=";
             if (result == System.Windows.Forms.DialogResult.OK)
                 SaveCsvPath.Text = dialog.SelectedPath + @"\";
         }
-
+        /// <summary>
+        /// Збереження у CSV файл  всієї інформації швидких товарів по обраній групі кас
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SaveCsvButton(object sender, RoutedEventArgs e)
         {
-            FindPhotoToPath();
+            //FindPhotoToPath();
             //пошук всіх швидких товарів
             ExpressGoods = connection.Query<SQLExpressGoods>($"{query3}'{SelectedExpressGoodsCode}'").ToList();
 
@@ -785,10 +820,14 @@ WHERE d.code=";
                 System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        /// <summary>
+        /// Кнопка друку макету підказок для касирів
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PrintExpressGoodsButton(object sender, RoutedEventArgs e)
         {
-            FindPhotoToPath();
+            //FindPhotoToPath();
             //пошук всіх швидких товарів
             ExpressGoods = connection.Query<SQLExpressGoods>($"{query3}'{SelectedExpressGoodsCode}'").ToList();
 
@@ -849,7 +888,11 @@ WHERE d.code=";
             }
         }
 
-
+        /// <summary>
+        /// Друк макету підказок для касирів
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void pd_PrintPage(object sender, PrintPageEventArgs e)
         {
 
@@ -942,6 +985,11 @@ WHERE d.code=";
                 e.HasMorePages = true;
             }
         }
+        /// <summary>
+        /// Друк макету на ваги КАС
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void PrintWeightListCAS(object sender, PrintPageEventArgs e)
         {
             int left;
@@ -959,7 +1007,7 @@ WHERE d.code=";
 
 
 
-            while (counter < WeightGoods.Count) //WeightGoods.Count
+            while (counter <= WeightGoods.Count) //WeightGoods.Count
             {
 
                 top = 0;
@@ -971,7 +1019,7 @@ WHERE d.code=";
 
                     for (int j = 0; j < 5; j++)
                     {
-                        if (counter < WeightGoods.Count)
+                        if (counter <= WeightGoods.Count)
                         {
                             if (WeightGoods[counter].pathPhoto != null)
                             {
@@ -1029,10 +1077,14 @@ WHERE d.code=";
                 e.HasMorePages = true;
             }
         }
-
+        /// <summary>
+        /// Кнопка для друку макету на кас
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PrintLoyoutCASButton(object sender, RoutedEventArgs e)
         {
-            FindPhotoToPath();
+            //FindPhotoToPath();
             List<SQLWeightGoods> WeightGoodsFromSort = new List<SQLWeightGoods>();
             WeightGoods = new List<SQLWeightGoods>();
             WeightGoodsFromSort = connection.Query<SQLWeightGoods>($"{query5}'{SelectedWeightGroup}'").ToList();
@@ -1046,7 +1098,7 @@ WHERE d.code=";
                 for (; i < 101; i++)
                 {
 
-                    if (WeightGoodsFromSort.Count > i && WeightGoodsFromSort[j].PLU == i)
+                    if (WeightGoodsFromSort.Count >= i && WeightGoodsFromSort[j].PLU == i)
                     {
                         WeightGoods.Add(WeightGoodsFromSort[j]);
                         j++;
@@ -1066,7 +1118,7 @@ WHERE d.code=";
             }
 
             WeightLinkToPhoto();
-
+            Console.WriteLine(WeightGoods.Count);
             //Create a PrintPreviewDialog/PrintDialog object  
             System.Windows.Forms.PrintDialog previewDlg = new System.Windows.Forms.PrintDialog();
             //Create a PrintDocument object  
@@ -1097,7 +1149,7 @@ WHERE d.code=";
         /// </summary>
         void DeleteDuplicatePhotos()
         {
-            FindPhotoToPath();
+            //FindPhotoToPath();
             DuplicatePhotos = new List<PhotoInfo>();
             photoInfos = photoInfos.OrderBy(n => n.photoName).ToList();
             for (int i = 1; i < photoInfos.Count; i++)
@@ -1124,13 +1176,15 @@ WHERE d.code=";
             MessageBox.Show(countTMP.ToString());
         }
         /// <summary>
-        /// Друк макету цінників А3 
+        /// Кнопка Друку макету  А5 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void PrintPriceTagsButton(object sender, RoutedEventArgs e)
         {
-            FindPhotoToPath();
+            //FindPhotoToPath();
+            System.Windows.Controls.Button btn = sender as System.Windows.Controls.Button;
+
             WeightGoods = connection.Query<SQLWeightGoods>($"{query5}'{SelectedWeightGroup}'").ToList();
             WeightGoods = WeightGoods.OrderBy(n => n.PLU).ToList();
             WeightLinkToPhoto();
@@ -1145,7 +1199,15 @@ WHERE d.code=";
             //pd.DefaultPageSettings.PaperSize = new PaperSize("A3", 827, 584);
             counter = 0;
 
-            pd.PrintPage += PrintPriceTags;
+            switch (btn.Name)
+            {
+                case "PrintListWeightA5":
+                    pd.PrintPage += PrintPriceTagsA5;
+                    break;
+                case "PrintListWeightA4":
+                    pd.PrintPage += PrintPriceTagsA4;
+                    break;
+            }
             //Set Document property of PrintPreviewDialog  
             previewDlg.Document = pd;
             //Display dialog  
@@ -1160,8 +1222,12 @@ WHERE d.code=";
                 System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-        public void PrintPriceTags(object sender, PrintPageEventArgs e)
+        /// <summary>
+        /// Друк макету А5
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void PrintPriceTagsA5(object sender, PrintPageEventArgs e)
         {
             int left;
             int top;
@@ -1202,13 +1268,13 @@ WHERE d.code=";
                         SolidBrush myBrush = new SolidBrush(Color.White);
                         SolidBrush myGreenBrush = new SolidBrush(Color.Green);
                         //Назва
-                        System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 1, top + 20, 280, 180);
+                        System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left + 1, top + 20, 250, 180);
                         e.Graphics.FillRectangle(myBrush, myRectangle);
-                        e.Graphics.DrawString(WeightGoods[counter].name_wares, new Font("Arial", 36), Brushes.Black, myRectangle);
+                        e.Graphics.DrawString(WeightGoods[counter].name_wares, new Font("Arial", 36, System.Drawing.FontStyle.Bold), Brushes.Black, myRectangle);
                         //Артикул
-                        System.Drawing.Rectangle ArticlRectangle = new System.Drawing.Rectangle(left + 1, top + columnHeight - 90, 350, 70);
+                        System.Drawing.Rectangle ArticlRectangle = new System.Drawing.Rectangle(left + 1, top + columnHeight - 60, 250, 40);
                         e.Graphics.FillRectangle(myGreenBrush, ArticlRectangle);
-                        e.Graphics.DrawString(WeightGoods[counter].articl, new Font("Arial", 50, System.Drawing.FontStyle.Bold), Brushes.White, ArticlRectangle);
+                        e.Graphics.DrawString(WeightGoods[counter].articl, new Font("Arial", 30, System.Drawing.FontStyle.Bold), Brushes.White, ArticlRectangle);
                         //Номер кнопки
                         if (WeightGoods[counter].PLU != 0)
                             e.Graphics.DrawString(WeightGoods[counter].PLU.ToString(), new Font("Arial", 80, System.Drawing.FontStyle.Bold), Brushes.Black, columnWidth - 220, top + columnHeight - 125);
@@ -1236,10 +1302,96 @@ WHERE d.code=";
                 e.HasMorePages = true;
             }
         }
+        /// <summary>
+        /// Друк макету А4
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void PrintPriceTagsA4(object sender, PrintPageEventArgs e)
+        {
+            int left;
+            int top;
+            double waresImageWidth, leftPositionPhoto;
+            double waresImageHeight, topPositionPhoto;
+            double sizeImage = 800;
+            int columnWidth = e.PageBounds.Width;
+            int columnHeight = e.PageBounds.Height;
+            Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
 
+
+
+            while (counter < WeightGoods.Count) //WeightGoods.Count
+            {
+
+                top = 0;
+
+                left = 0;
+
+
+                if (counter < WeightGoods.Count)
+                {
+                    if (WeightGoods[counter].pathPhoto != null)
+                    {
+                        System.Drawing.Image waresImage = System.Drawing.Image.FromFile(WeightGoods[counter].pathPhoto);
+                        //Маштабування
+                        waresImageWidth = waresImage.Width;
+                        waresImageHeight = waresImage.Height;
+                        double coef = 0;
+                        if (waresImageHeight > waresImageWidth)
+                            coef = sizeImage / waresImageHeight;
+                        else
+                            coef = sizeImage / waresImageWidth;
+                        waresImageHeight = waresImageHeight * coef;
+                        waresImageWidth = waresImageWidth * coef;
+
+                        //вирівнювання по центру
+                        leftPositionPhoto = columnWidth / 2 - waresImageWidth / 2;
+                        topPositionPhoto = columnHeight / 2 - waresImageHeight / 2;
+                        e.Graphics.DrawImage(waresImage, Convert.ToInt32(leftPositionPhoto), Convert.ToInt32(topPositionPhoto), Convert.ToInt32(waresImageWidth), Convert.ToInt32(waresImageHeight));
+                    }
+                    SolidBrush myBrush = new SolidBrush(Color.White);
+                    SolidBrush myGreenBrush = new SolidBrush(Color.Green);
+                    //Назва
+                    System.Drawing.Rectangle myRectangle = new System.Drawing.Rectangle(left, top, columnWidth, 200);
+                    e.Graphics.FillRectangle(myGreenBrush, myRectangle);
+                    e.Graphics.DrawString(WeightGoods[counter].name_wares, new Font("Arial", 60, System.Drawing.FontStyle.Bold), Brushes.White, myRectangle);
+                    //Якщо товар ваговий
+                    if (WeightGoods[counter].IsWeight)
+                    {
+                        var bmp = new Bitmap(Properties.Resources.Weight);
+
+                        e.Graphics.DrawImage(bmp, 0, 200, 33, 50);
+                    }
+                    //Артикул
+                    System.Drawing.Rectangle ArticlRectangle = new System.Drawing.Rectangle(left, top + columnHeight - 110, columnWidth, 110);
+                    e.Graphics.FillRectangle(myGreenBrush, ArticlRectangle);
+                    e.Graphics.DrawString($"    {WeightGoods[counter].articl}", new Font("Arial", 80, System.Drawing.FontStyle.Bold), Brushes.White, ArticlRectangle);
+                    //Номер кнопки
+                    if (WeightGoods[counter].PLU != 0)
+                        e.Graphics.DrawString(WeightGoods[counter].PLU.ToString(), new Font("Arial", 80, System.Drawing.FontStyle.Bold), Brushes.Black, columnWidth - 220, columnHeight - 220);
+                    counter++;
+                }
+                else break;
+
+                break;
+
+            }
+
+
+            if (counter < WeightGoods.Count)
+            {
+                //Has more pages??  
+                e.HasMorePages = true;
+            }
+        }
+        /// <summary>
+        /// Кнопка друку одного макету А5/А4
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PrintOnePriceTagsButton(object sender, RoutedEventArgs e)
         {
-
+            //FindPhotoToPath();
             System.Windows.Controls.Button btn = sender as System.Windows.Controls.Button;
             if (btn.DataContext is Wares)
             {
@@ -1268,8 +1420,16 @@ WHERE d.code=";
             // A4 width: 827 Height: 1169
             //pd.DefaultPageSettings.PaperSize = new PaperSize("A3", 827, 584);
             counter = 0;
+            switch (btn.Name)
+            {
+                case "PrintA5":
+                    pd.PrintPage += PrintPriceTagsA5;
+                    break;
+                case "PrintA4":
+                    pd.PrintPage += PrintPriceTagsA4;
+                    break;
+            }
 
-            pd.PrintPage += PrintPriceTags;
             //Set Document property of PrintPreviewDialog  
             previewDlg.Document = pd;
             //Display dialog  
@@ -1283,6 +1443,55 @@ WHERE d.code=";
             {
                 System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ClickReportAssortmentMatrix(object sender, RoutedEventArgs e)
+        {
+            //FindPhotoToPath();
+            //товари з активної асортиментної матриці
+            AssortmentMatrix = connection.Query<SQLAssortmentMatrix>(query6).ToList();
+            int countMissingPhotos = AssortmentMatrix.Count();
+            foreach (var item in AssortmentMatrix)
+            {
+                foreach (var infoPhoto in photoInfos)
+                {
+                    if (item.code == infoPhoto.photoName)
+                    {
+                        item.isPhotoPresent = true;
+                        countMissingPhotos--;
+                        break;
+                    }
+                }
+            }
+
+            //створення строк для запису файлу
+            List<string> StrWriteAssortmentMatrix = new List<string>();
+            StrWriteAssortmentMatrix.Add($"Дата створення звіту:;{DateTime.UtcNow.ToString("d")}");
+            StrWriteAssortmentMatrix.Add($"Кількість позицій в асортиментній матриці:;{AssortmentMatrix.Count()};Кількість відсутніх фото:;{countMissingPhotos}; Каталог з фото по якому сформовано звіт:; {PathToPhotoTextBox.Text}");
+            StrWriteAssortmentMatrix.Add($"Назва товару;Штрихкод;Внутрішній код;Внутрішній артикул;Чи ваговий товар;Чи присутнє фото");
+            foreach (var item in AssortmentMatrix)
+            {
+                StrWriteAssortmentMatrix.Add($"{item.name};{item.barcode_last};{item.code};{item.articul};{item.is_weight};{item.isPhotoPresent}");
+            }
+
+            //запис в файл
+            try
+            {
+                File.AppendAllLines($"{SaveAssortmentMatrixPath.Text}Звіт по асортиментній матриці.csv", StrWriteAssortmentMatrix, System.Text.Encoding.GetEncoding("Windows-1251"));
+                System.Windows.MessageBox.Show($"Шлях до файлу: {SaveAssortmentMatrixPath.Text}Звіт по асортиментній матриці.csv", "Файл збережено!", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OpenToFilePathSaveAssortmentMatrix(object sender, RoutedEventArgs e)
+        {
+            var dialog = new FolderBrowserDialog();
+            DialogResult result = dialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+                SaveAssortmentMatrixPath.Text = dialog.SelectedPath + @"\";
         }
     }
 }

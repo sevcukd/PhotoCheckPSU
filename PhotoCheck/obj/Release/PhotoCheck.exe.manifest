@@ -115,14 +115,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PhotoCheck.exe" size="1307584">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PhotoCheck.exe" size="1338304">
       <assemblyIdentity name="PhotoCheck" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>/cR72/2hHlohEsT2dRFM5oeRImYLdS69egmE9BHZaUs=</dsig:DigestValue>
+        <dsig:DigestValue>kkT7s+Ry6TG+IF+uofWhMK/Upbz70Qe6+vH17Q9drJs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
