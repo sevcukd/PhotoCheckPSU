@@ -113,7 +113,31 @@
                                     </Image>-->
                                 </StackPanel>
                                 <StackPanel Orientation="Vertical" Grid.Column="1" Grid.ColumnSpan="50">
-                                    <TextBox Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap"  Text="{Binding nameWares}" />
+                                    <RichTextBox IsReadOnly="True">
+                                        <FlowDocument IsOptimalParagraphEnabled="True" IsHyphenationEnabled="True">
+                                            <Paragraph TextAlignment="Left" >
+                                                <Run Text="{Binding nameWares}" FontWeight="Bold" FontSize="28"/>
+                                                <LineBreak/>
+                                            </Paragraph>
+                                            <Paragraph TextAlignment="Left"  FontSize="20">
+                                                <Run Text="Код: "/>
+                                                <Run Text="{Binding kodeWares}" />
+                                                <LineBreak/>
+                                            </Paragraph>
+                                            <Paragraph TextAlignment="Left"  FontSize="20">
+                                                <Run Text="Артикул: "/>
+                                                <Run Text="{Binding Articl}" />
+                                                <LineBreak/>
+                                            </Paragraph>
+                                            <Paragraph TextAlignment="Left"  FontSize="20">
+                                                <Run Text="Штрих-код: "/>
+                                                <Run Text="{Binding barcode}" />
+                                                <LineBreak/>
+                                            </Paragraph>
+
+                                        </FlowDocument>
+                                    </RichTextBox>
+                                    <!--<TextBox Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap"  Text="{Binding nameWares}" />
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="Код: " FontSize="24"/>
                                         <TextBox Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding kodeWares}" />
@@ -122,6 +146,10 @@
                                         <TextBlock Text="Артикул: " FontSize="24"/>
                                         <TextBox Margin="0" Grid.Row="1" FontSize="24"  Text="{Binding Articl}" />
                                     </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Штрих-код: " FontSize="24"/>
+                                        <TextBlock Margin="0" Grid.Row="1" FontSize="24" TextWrapping="Wrap" Text="{Binding barcode}" />
+                                    </StackPanel>-->
 
                                     <Button Content="Копіювати фото в буфер" Height="45" Style="{StaticResource yelowButton}"
                                             Click="CopyPhoto"/>
@@ -207,42 +235,92 @@
                     </StackPanel>
                 </Border>
 
+
                 <!--Пошук по коду або назві-->
                 <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                Text="Пошук за кодом або артикулом" FontWeight="Bold"/>
+                Text="Пошук товарів" FontWeight="Bold"/>
                 <Border  Grid.Row="1" Padding="10" Visibility="Visible"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
                     </Border.Effect>
                     <StackPanel>
+                        <TextBlock FontSize="20" x:Name="NameFindWaresTextBloc" TextWrapping="Wrap" FontWeight="DemiBold" HorizontalAlignment="Center" Margin="5"/>
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                             <TextBlock FontSize="20" Text="Код: " HorizontalAlignment="Center"/>
                             <TextBox x:Name="CodeWaresTextBox" 
                              FontSize="20" Height="30" Width="300"></TextBox>
+                            <Button Content="За кодом" Width="150" Height="40"
+                            Style="{StaticResource yelowButton}" 
+                            Click="FindPhotoBuCode"/>
                         </StackPanel>
                         <StackPanel Orientation="Vertical"  HorizontalAlignment="Center" >
                             <TextBlock FontSize="20" Text="Артикул: " HorizontalAlignment="Center"/>
                             <TextBox x:Name="ArtclWaresTextBox" 
                              FontSize="20" Height="30" Width="300"></TextBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <TextBlock FontSize="20" Text="Штрихкод: " HorizontalAlignment="Center"/>
-                            <TextBox x:Name="BarcodeWaresTextBox" 
-                             FontSize="20" Height="30" Width="300"></TextBox>
-                        </StackPanel>
-                        <TextBlock FontSize="20" x:Name="NameFindWaresTextBloc" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="5"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Button Content="За кодом" Width="150" Height="40"
-                            Style="{StaticResource yelowButton}" 
-                            Click="FindPhotoBuCode"/>
                             <Button Content="За артикулом" Width="150" Height="40"
                             Style="{StaticResource yelowButton}" 
                             Click="FindPhotoByActcl"/>
                         </StackPanel>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock FontSize="20" Text="Штрих-код: " HorizontalAlignment="Center"/>
+                            <TextBox x:Name="BarcodeWaresTextBox" 
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                            <Button Content="За штрих-кодом" Width="200" Height="40"
+                            Style="{StaticResource yelowButton}" 
+                            Click="FindPhotoBarcode"/>
+                        </StackPanel>
+                        
                     </StackPanel>
                 </Border>
+                <!--перейменування фото з штрихкоду в код-->
+                <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Перейменування фото" FontWeight="Bold"/>
+                <Border  Grid.Row="1" Padding="10" Visibility="Visible"
+                Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>
+                    </Border.Effect>
+                    <StackPanel>
 
+
+                        <TextBlock FontSize="20" TextWrapping="Wrap"
+                               HorizontalAlignment="Center"
+                               Text="Шлях до фото по штрих-коду"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox x:Name="PathToPhotoSuppliers"  TextChanged="ChangePhotoSuppliersPath"
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                            <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePathPhotoSuppliers">Змінити</Button>
+                        </StackPanel>
+                        <TextBlock FontSize="20" TextWrapping="Wrap"
+                               HorizontalAlignment="Center"
+                               Text="Шлях куди зберігати фото"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox x:Name="PathToRenamedPhotos"  TextChanged="ChangeRenamedPhotosPath"
+                             FontSize="20" Height="30" Width="300"></TextBox>
+                            <Button Grid.Row="2" Width="100" Height="40" Style="{StaticResource yelowButton}" Click="OpenToFilePathRenamedPhotos">Змінити</Button>
+                        </StackPanel>
+                        <Button Grid.Row="2" Width="250" Height="40"
+                            Click="RenamePhotos" Content="Перейментувати фото">
+
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource yelowButton}" TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isRenamedPathOk, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding isRenamedPathOk, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Border>
 
                 <TextBlock FontSize="18" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
                 Text="Шлях для копіювання фото на диск" FontWeight="Bold"/>
@@ -342,7 +420,7 @@
 
 
                 <!--Тільки тимчасово-->
-                <Border  Grid.Row="1" Padding="10" Visibility="Collapsed"
+                <Border  Grid.Row="1" Padding="10" Visibility="Visible"
                 Margin="3" Background="White" BorderBrush="Gray" BorderThickness="0"  CornerRadius="10" >
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0" BlurRadius="7"  Color="#bfbfbf"/>

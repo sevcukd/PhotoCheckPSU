@@ -13,5 +13,7 @@ namespace PhotoCheck.SQL
         public string Code_Direction { get; set; }
         public string articl { get; set; }
         public bool IsWeight { get; set; }
+        public string barcode { get; set; }
     }
+
 }

@@ -18,6 +18,7 @@ namespace PhotoCheck.Models
         public string Articl { get; set; }
         public PhotoStatus savePhotoStatus { get; set; } = PhotoStatus.Miss; // 0-лишити фото; 1-невірне фото; 2-невірний код
         public bool IsWeight { get; set; }
+        public string  barcode { get; set; }
 
         ~Wares()
         {

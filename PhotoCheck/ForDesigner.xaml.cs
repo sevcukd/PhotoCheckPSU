@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using System;
+using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 using PhotoCheck.SQL;
 using PhotoCheck.Models;
+using Task = System.Threading.Tasks.Task;
 
 namespace PhotoCheck
 {
@@ -32,6 +34,8 @@ namespace PhotoCheck
         public ObservableCollection<Wares> ListWares { get; set; }
         public string pathToPhoto { get; set; } = @"\\truenas\Public\PHOTOBANK\Medium\"; // \\truenas\Public\PHOTOBANK\Medium\   d:\Pictures\Products\
         public string pathToExel { get; set; } = @"";
+        public string PhotoSuppliers { get; set; } = @"";
+        public string RenamedPhotos { get; set; } = @"";
         public List<SQLWares> listWares { get; set; }
         public List<SQLKasaList> KasaList { get; set; }
         public List<SQLExpressGoods> ExpressGoods { get; set; }
@@ -56,6 +60,19 @@ namespace PhotoCheck
                 else return false;
             }
         }
+        public bool isPhotoSuppliersPath { get; set; }
+        public bool isRenamedPhotosPath { get; set; }
+        public bool isRenamedPathOk
+        {
+            get
+            {
+                if (isPhotoSuppliersPath && isRenamedPhotosPath)
+                {
+                    return true;
+                }
+                else return false;
+            }
+        }
         public bool isSelectedExpressGoods
         {
             get
@@ -74,8 +91,11 @@ namespace PhotoCheck
                 else return false;
             }
         }
-
-        public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl, w.IsWeight FROM dbo.Wares w "; //000148259
+        // всі товари з 1с (якщо додати код групи то видать тільки по групі)
+        //public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl, w.IsWeight FROM dbo.Wares w "; //000148259
+        public string query1 = @"SELECT w.code_wares,w.name_wares,w.Code_Direction, w.articl, w.IsWeight 
+, ( SELECT dbo.Concatenate(b.bar_code+',') FROM barcode b WHERE b.code_wares=w.code_wares  ) AS barcode
+FROM dbo.Wares w";
         public string query2 = @"SELECT _code, _CASH_place._Description FROM DW.dbo.V1C_DIM_OPTION_WPC _CASH_place";
         public string query3 = @"SELECT  g.Order_Button , g.Name_Button, w1.code_wares AS CodeWares ,w1.name_wares,w1.articl,
   (SELECT max(bc.bar_code)  FROM barcode bc WHERE bc.code_wares=w1.code_wares) AS bar_code,w1.IsWeight
@@ -105,10 +125,11 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
         public List<PhotoInfo> photoInfos { get; set; }
         public List<PhotoInfo> photoArtcl { get; set; }
         public List<SQLAssortmentMatrix> AssortmentMatrix { get; set; }
+        private readonly object _locker = new object();
         public SaveRes(List<PhotoInfo> photo)
         {
             InitializeComponent();
-
+            listWares = new List<SQLWares>();
 
             PathToPhotoTextBox.Text = pathToPhoto;
             PathToExelTextBox.Text = pathToExel;
@@ -116,8 +137,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             TypeCommit = eTypeCommit.Auto;
             connection = new SqlConnection(varConectionString);
             connection.Open();
-            //список всіх товарів з 1С
-            listWares = connection.Query<SQLWares>(query1).ToList();
+
             //список груп кас швидких товарів
             KasaList = connection.Query<SQLKasaList>(query2).ToList();
             KasaListShow.ItemsSource = KasaList;
@@ -126,16 +146,30 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             WeightGroups = connection.Query<SQLWeightGroups>(query4).ToList();
             WeightGroups = WeightGroups.OrderBy(n => n.desc).ToList();
             WeightGroupsShow.ItemsSource = WeightGroups;
+            //список всіх товарів з 1С
+            FillingListWares();
             //Збір інформаціїї про фото
             FindPhotoToPath();
 
 
         }
 
+        async void FillingListWares()
+        {
+            await Task.Run(() =>
+            {
+                lock (_locker)
+                {
+                    listWares = connection.Query<SQLWares>(query1).ToList();
+                }
+            });
 
+        }
         private void FindPhotoToPath()
         {
+
             photoInfos = new List<PhotoInfo>();
+
             string[] files = null;
             if (Directory.Exists(pathToPhoto))
             {
@@ -258,7 +292,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                     {
                         strArray[i] = res.ToString("D8");
                     }
-                    
+
                     //int temp = strArray[i].Length;
                     //switch (temp)
                     //{
@@ -317,6 +351,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                                         kodeWares = item.code_wares,
                                         nameWares = item.name_wares,
                                         Articl = item.articl,
+                                        barcode = item.barcode,
 
                                     };
                                     ListWares.Add(dataUser);
@@ -333,6 +368,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                                         kodeWares = item.code_wares,
                                         nameWares = item.name_wares,
                                         Articl = item.articl,
+                                        barcode = item.barcode,
 
                                     };
                                     ListWares.Add(dataUser);
@@ -390,41 +426,6 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             }
             if (int.TryParse(CodeWaresTextBox.Text, out int res))
                 CodeWaresTextBox.Text = res.ToString("D9");
-            //switch (temp)
-            //{
-            //    case 9:
-            //        break;
-            //    case 8:
-            //        CodeWaresTextBox.Text = "0" + CodeWaresTextBox.Text;
-            //        break;
-            //    case 7:
-            //        CodeWaresTextBox.Text = "00" + CodeWaresTextBox.Text;
-            //        break;
-            //    case 6:
-            //        CodeWaresTextBox.Text = "000" + CodeWaresTextBox.Text;
-            //        break;
-            //    case 5:
-            //        CodeWaresTextBox.Text = "0000" + CodeWaresTextBox.Text;
-            //        break;
-            //    case 4:
-            //        CodeWaresTextBox.Text = "00000" + CodeWaresTextBox.Text;
-            //        break;
-            //    case 3:
-            //        CodeWaresTextBox.Text = "000000" + CodeWaresTextBox.Text;
-            //        break;
-            //    case 2:
-            //        CodeWaresTextBox.Text = "0000000" + CodeWaresTextBox.Text;
-            //        break;
-            //    case 1:
-            //        CodeWaresTextBox.Text = "00000000" + CodeWaresTextBox.Text;
-            //        break;
-            //    default:
-            //        CodeWaresTextBox.Text = CodeWaresTextBox.Text.Substring(temp - 9);
-            //        break;
-            //}
-
-
-
 
             foreach (var item in listWares)
             {
@@ -444,6 +445,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                                 nameWares = item.name_wares,
                                 Articl = item.articl,
                                 IsWeight = item.IsWeight,
+                                barcode = item.barcode,
 
                             };
                             ListWares.Add(dataUser);
@@ -460,6 +462,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                                 nameWares = item.name_wares,
                                 Articl = item.articl,
                                 IsWeight = item.IsWeight,
+                                barcode = item.barcode,
 
                             };
                             ListWares.Add(dataUser);
@@ -469,6 +472,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                     }
                     ArtclWaresTextBox.Text = item.articl;
                     NameFindWaresTextBloc.Text = item.name_wares;
+                    BarcodeWaresTextBox.Text = item.barcode;
 
                 }
             }
@@ -491,36 +495,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             }
             if (int.TryParse(ArtclWaresTextBox.Text, out int res))
                 ArtclWaresTextBox.Text = res.ToString("D8");
-            //switch (temp)
-            //{
-            //    case 8:
-            //        break;
-            //    case 7:
-            //        ArtclWaresTextBox.Text = "0" + ArtclWaresTextBox.Text;
-            //        break;
-            //    case 6:
-            //        ArtclWaresTextBox.Text = "00" + ArtclWaresTextBox.Text;
-            //        break;
-            //    case 5:
-            //        ArtclWaresTextBox.Text = "000" + ArtclWaresTextBox.Text;
-            //        break;
-            //    case 4:
-            //        ArtclWaresTextBox.Text = "0000" + ArtclWaresTextBox.Text;
-            //        break;
-            //    case 3:
-            //        ArtclWaresTextBox.Text = "00000" + ArtclWaresTextBox.Text;
-            //        break;
-            //    case 2:
-            //        CodeWaresTextBox.Text = "000000" + ArtclWaresTextBox.Text;
-            //        break;
-            //    case 1:
-            //        ArtclWaresTextBox.Text = "0000000" + ArtclWaresTextBox.Text;
-            //        break;
 
-            //    default:
-            //        ArtclWaresTextBox.Text = ArtclWaresTextBox.Text.Substring(temp - 8);
-            //        break;
-            //}
 
 
 
@@ -544,6 +519,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                                 nameWares = item.name_wares,
                                 Articl = item.articl,
                                 IsWeight = item.IsWeight,
+                                barcode = item.barcode,
 
                             };
                             ListWares.Add(dataUser);
@@ -560,6 +536,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                                 nameWares = item.name_wares,
                                 Articl = item.articl,
                                 IsWeight = item.IsWeight,
+                                barcode = item.barcode,
 
                             };
                             ListWares.Add(dataUser);
@@ -568,12 +545,83 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                     }
                     CodeWaresTextBox.Text = item.code_wares;
                     NameFindWaresTextBloc.Text = item.name_wares;
+                    BarcodeWaresTextBox.Text = item.barcode;
                 }
             }
             WaresList.ItemsSource = ListWares;
 
         }
+        private void FindPhotoBarcode(object sender, RoutedEventArgs e)
+        {
+            //FindPhotoToPath();
+            ListWares = new ObservableCollection<Wares>();
+            ListWares.Clear();
 
+
+
+            int temp = BarcodeWaresTextBox.Text.Length;
+            if (temp == 0)
+            {
+                System.Windows.MessageBox.Show("Введіть Штрих-код!", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+
+
+
+            foreach (var item in listWares)
+            {
+                var tempBarcode = item.barcode.Split(new char[] { ',' });
+                for (int i = 0; i < tempBarcode.Length; i++)
+                {
+                    if (tempBarcode[i] == BarcodeWaresTextBox.Text)
+                    {
+                        int aa = 0;
+                        foreach (var photo in photoInfos)
+                        {
+                            if (item.code_wares == photo.photoName)
+                            {
+
+                                Wares dataUser = new Wares()
+                                {
+                                    photoPath = photo.photoPath,
+                                    photoFullName = photo.photoFullName,
+                                    kodeWares = item.code_wares,
+                                    nameWares = item.name_wares,
+                                    Articl = item.articl,
+                                    IsWeight = item.IsWeight,
+                                    barcode = item.barcode
+
+                                };
+                                ListWares.Add(dataUser);
+                                break;
+                            }
+                            aa++;
+                            if (aa == photoInfos.Count)
+                            {
+                                Wares dataUser = new Wares()
+                                {
+                                    photoPath = "Images\\Spar.jpg",
+                                    photoFullName = photo.photoFullName,
+                                    kodeWares = item.code_wares,
+                                    nameWares = item.name_wares,
+                                    Articl = item.articl,
+                                    IsWeight = item.IsWeight,
+                                    barcode = item.barcode
+
+                                };
+                                ListWares.Add(dataUser);
+                                break;
+                            }
+                        }
+                        CodeWaresTextBox.Text = item.code_wares;
+                        ArtclWaresTextBox.Text = item.articl;
+                        NameFindWaresTextBloc.Text = item.name_wares;
+                    }
+                }
+            }
+            WaresList.ItemsSource = ListWares;
+        }
         private void CopyPhotoToRepository(object sender, RoutedEventArgs e)
         {
 
@@ -687,38 +735,6 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             for (int i = 0; i < photoArtcl.Count; i++)
             {
                 photoArtcl[i].photoName = Convert.ToInt32(photoArtcl[i].photoName).ToString("D8");
-                //int temp = photoArtcl[i].photoName.Length;
-                //switch (temp)
-                //{
-                //    case 8:
-                //        break;
-                //    case 7:
-                //        photoArtcl[i].photoName = "0" + photoArtcl[i].photoName;
-                //        break;
-                //    case 6:
-                //        photoArtcl[i].photoName = "00" + photoArtcl[i].photoName;
-                //        break;
-                //    case 5:
-                //        photoArtcl[i].photoName = "000" + photoArtcl[i].photoName;
-                //        break;
-                //    case 4:
-                //        photoArtcl[i].photoName = "0000" + photoArtcl[i].photoName;
-                //        break;
-                //    case 3:
-                //        photoArtcl[i].photoName = "00000" + photoArtcl[i].photoName;
-                //        break;
-                //    case 2:
-                //        photoArtcl[i].photoName = "000000" + photoArtcl[i].photoName;
-                //        break;
-                //    case 1:
-                //        photoArtcl[i].photoName = "0000000" + photoArtcl[i].photoName;
-                //        break;
-
-                //    default:
-                //        photoArtcl[i].photoName = photoArtcl[i].photoName.Substring(temp - 8);
-                //        break;
-                //}
-
 
             }
             //System.Windows.MessageBox.Show(photoArtcl.Count.ToString());
@@ -731,7 +747,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                     {
                         try
                         {
-                            System.IO.File.Copy(photo.photoPath, TextBoxCodePath.Text + item.code_wares + ".png", true);
+                            System.IO.File.Copy(photo.photoPath, TextBoxCodePath.Text + item.code_wares + Path.GetExtension(photo.photoPath), true);
                         }
                         catch (Exception ex)
                         {
@@ -1492,6 +1508,128 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             DialogResult result = dialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
                 SaveAssortmentMatrixPath.Text = dialog.SelectedPath + @"\";
+        }
+
+        private void OpenToFilePathPhotoSuppliers(object sender, RoutedEventArgs e)
+        {
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                PhotoSuppliers = dialog.SelectedPath + @"\";
+                PathToPhotoSuppliers.Text = PhotoSuppliers;
+            }
+
+        }
+
+        private void OpenToFilePathRenamedPhotos(object sender, RoutedEventArgs e)
+        {
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                RenamedPhotos = dialog.SelectedPath + @"\";
+                PathToRenamedPhotos.Text = RenamedPhotos;
+            }
+        }
+
+        private void ChangePhotoSuppliersPath(object sender, TextChangedEventArgs e)
+        {
+            PhotoSuppliers = PathToPhotoSuppliers.Text;
+            if (PathToPhotoSuppliers.Text != "")
+                isPhotoSuppliersPath = true;
+
+            else
+                isPhotoSuppliersPath = false;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isRenamedPathOk"));
+        }
+
+        private void ChangeRenamedPhotosPath(object sender, TextChangedEventArgs e)
+        {
+            RenamedPhotos = PathToRenamedPhotos.Text;
+            if (PathToRenamedPhotos.Text != "")
+                isRenamedPhotosPath = true;
+
+            else
+                isRenamedPhotosPath = false;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("isRenamedPathOk"));
+        }
+
+        private void RenamePhotos(object sender, RoutedEventArgs e)
+        {
+            string[] fileBarcode = null;
+            if (Directory.Exists(PathToPhotoSuppliers.Text))
+                fileBarcode = System.IO.Directory.GetFiles(PathToPhotoSuppliers.Text);
+            else
+            {
+                System.Windows.MessageBox.Show($"Каталог {PhotoSuppliers} відсутній", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var photoBarcode = new List<PhotoInfo>();
+
+
+
+            for (int i = 0; i < fileBarcode.Length; i++)
+            {
+                try
+                {
+
+                    photoBarcode.Add(new PhotoInfo() { photoName = Path.GetFileNameWithoutExtension(fileBarcode[i]), photoPath = Path.GetFullPath(fileBarcode[i]), photoFullName = Path.GetFileName(fileBarcode[i]) });
+
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show(ex.Message);
+                }
+
+            }
+
+
+            int countRenamedPhotos = 0;
+            List<string> missingFiles = new List<string>();
+
+            //System.Windows.MessageBox.Show(photoArtcl.Count.ToString());
+
+            foreach (var photo in photoBarcode)
+            {
+                //if (!listWares.Exists( x => x.barcode == photo.photoName ))
+                //{
+                //    missingFiles.Add(photo.photoName);
+                //}
+                foreach (var item in listWares)
+                {
+                    var tempBarcode = item.barcode.Split(new char[] { ',' });
+                    for (int i = 0; i < tempBarcode.Length; i++)
+                    {
+
+                        if (photo.photoName == tempBarcode[i])
+                        {
+                            try
+                            {
+                                if (File.Exists(RenamedPhotos + item.code_wares + Path.GetExtension(photo.photoPath)))
+                                {
+                                    DialogResult result = MessageBox.Show($"Фото {item.code_wares + Path.GetExtension(photo.photoPath)} існує за вказаним шляхом! Замінити його?", "Увага!", MessageBoxButtons.YesNoCancel);
+                                    if (result == System.Windows.Forms.DialogResult.Yes)
+                                    {
+                                        File.Delete(RenamedPhotos + item.code_wares + Path.GetExtension(photo.photoPath));
+                                    }
+                                    else break;
+                                }
+                                System.IO.File.Move(photo.photoPath, RenamedPhotos + item.code_wares + Path.GetExtension(photo.photoPath));
+                                countRenamedPhotos++;
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Windows.MessageBox.Show($"Дане фото не можна скопіювати! {ex.Message}", "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                            break;
+                        }
+
+                    }
+                }
+            }
+            MessageBox.Show($"Знайдено файлів: {photoBarcode.Count}; Перейменовано і переміщено: {countRenamedPhotos}");
         }
     }
 }
