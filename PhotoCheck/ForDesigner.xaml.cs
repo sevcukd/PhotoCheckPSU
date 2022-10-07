@@ -35,7 +35,7 @@ namespace PhotoCheck
         public string pathToPhoto { get; set; } = @"\\truenas\Public\PHOTOBANK\Medium\"; // \\truenas\Public\PHOTOBANK\Medium\   d:\Pictures\Products\
         public string pathToExel { get; set; } = @"";
         public string PhotoSuppliers { get; set; } = @"";
-        public string RenamedPhotos { get; set; } = @"";
+        public string RenamedPhotos { get; set; } = @"\\truenas\Public\PHOTOBANK\Check\";
         public List<SQLWares> listWares { get; set; }
         public List<SQLKasaList> KasaList { get; set; }
         public List<SQLExpressGoods> ExpressGoods { get; set; }
@@ -133,6 +133,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
 
             PathToPhotoTextBox.Text = pathToPhoto;
             PathToExelTextBox.Text = pathToExel;
+            PathToRenamedPhotos.Text = RenamedPhotos;
             //підключення до бази
             TypeCommit = eTypeCommit.Auto;
             connection = new SqlConnection(varConectionString);
@@ -169,25 +170,16 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
         {
 
             photoInfos = new List<PhotoInfo>();
-
-            string[] files = null;
-            if (Directory.Exists(pathToPhoto))
-            {
-                files = System.IO.Directory.GetFiles(pathToPhoto);
-            }
-            else
-            {
-                System.Windows.MessageBox.Show($"Вказаний шлях відсутній або ви не маєте прав доступу до каталогу!", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-
-
+            //щитуємо інформацію з каталогу
+            string[] files = DirectoryInfo();
+            //перевіряємо чи він не пустий
             if (files.Length <= 0)
             {
                 MessageBox.Show("В обраному каталозі немає жодного файлу");
             }
-
+            //перейменовуємо погані фото 
+            RenameBadPhoto(files);
+            //отримуємо всю інформацію по фото
             for (int i = 0; i < files.Length; i++)
             {
                 try
@@ -204,6 +196,49 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             HelpList.Visibility = Visibility.Collapsed;
             SV_WaresList.Visibility = Visibility.Visible;
 
+        }
+        private string[] DirectoryInfo()
+        {
+            string[] files = null;
+            if (Directory.Exists(pathToPhoto))
+            {
+                files = System.IO.Directory.GetFiles(pathToPhoto);
+                return files;
+            }
+            else
+            {
+                System.Windows.MessageBox.Show($"Вказаний шлях відсутній або ви не маєте прав доступу до каталогу!", "Увага!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return files;
+            }
+        }
+        private void  RenameBadPhoto(string[] files)
+        {
+            string pathTo;
+            string nameWares;
+            for (int i = 0; i < files.Length; i++)
+            {
+                nameWares = Path.GetFileNameWithoutExtension(files[i]);
+                if (nameWares.Length != 9)
+                {
+                    if (int.TryParse(nameWares, out int res))
+                    {
+                        try
+                        {
+                            pathTo = pathToPhoto + res.ToString("D9") + Path.GetExtension(files[i]);
+                            if(File.Exists(pathTo))
+                                File.Delete(pathTo);
+                            System.IO.File.Move(Path.GetFullPath(files[i]), pathTo);
+                            files[i] = pathTo;
+                            continue;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                        
+                    }
+                }
+            }
         }
         private void OpenToFilePath(object sender, RoutedEventArgs e)
         {
