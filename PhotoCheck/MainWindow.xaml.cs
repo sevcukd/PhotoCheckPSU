@@ -172,7 +172,7 @@ namespace PhotoCheck
                 pathPhoto = dialog.SelectedPath + @"\";
                 PathPhotoTextBox.Text = pathPhoto;
             }
-            
+
             //OpenFileDialog openFileDialog = new OpenFileDialog();
             //if (openFileDialog.ShowDialog() == true)
             //    MessageBox.Show(openFileDialog.FileName);
@@ -228,7 +228,7 @@ namespace PhotoCheck
                                     kodeWares = item.code_wares,
                                     nameWares = item.name_wares,
                                     Articl = item.articl,
-                                   
+
                                 };
                                 ListWares.Add(dataUser);
                                 //RadioButtonList.Items.Add(dataUser);
@@ -282,7 +282,7 @@ namespace PhotoCheck
                 pathToPhoto = dialog.SelectedPath + @"\";
                 PathToPhotoTextBox.Text = pathToPhoto;
             }
-            
+
         }
         void WaitCollect(int pMs = 1000)
         {
@@ -312,7 +312,7 @@ namespace PhotoCheck
             //}
             //WaresList.ItemsSource = ListWares2;
             //ListWares.Clear();
-            if(ListWares==null) return;
+            if (ListWares == null) return;
             foreach (var ware in ListWares)
             {
 
@@ -323,7 +323,7 @@ namespace PhotoCheck
                     {
 
                         case PhotoStatus.GoodPhoto: // переміcити - добре фото
-                            
+
                             //MessageBox.Show(pathToPhoto + ware.photoFullName);
                             file.MoveTo(pathToPhoto + ware.photoFullName);
                             //File.Move(ware.photoPath, pathToPhoto+ware.photoFullName);
@@ -332,7 +332,7 @@ namespace PhotoCheck
                             file.MoveTo(pathPhoto + "невірне фото" + file.Name);
                             break;
                         case PhotoStatus.Miss: // нічого не робити)))
-                            
+
                             break;
                     }
                 }
@@ -361,7 +361,7 @@ namespace PhotoCheck
 
         private void CopyPhoto(object sender, RoutedEventArgs e)
         {
-            SaveRes save = new SaveRes(photoInfos);
+            SaveRes save = new SaveRes();
             save.Show();
         }
     }

@@ -126,7 +126,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
         public List<PhotoInfo> photoArtcl { get; set; }
         public List<SQLAssortmentMatrix> AssortmentMatrix { get; set; }
         private readonly object _locker = new object();
-        public SaveRes(List<PhotoInfo> photo)
+        public SaveRes() //List<PhotoInfo> photo
         {
             InitializeComponent();
             listWares = new List<SQLWares>();
@@ -171,11 +171,17 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
 
             photoInfos = new List<PhotoInfo>();
             //щитуємо інформацію з каталогу
-            string[] files = DirectoryInfo();
+            string[] files = new string[] { };
+            if (DirectoryInfo() != null)
+            {
+                files = DirectoryInfo();
+            }
+
             //перевіряємо чи він не пустий
-            if (files.Length <= 0)
+            if (files != null && files.Length <= 0)
             {
                 MessageBox.Show("В обраному каталозі немає жодного файлу");
+
             }
             //перейменовуємо погані фото 
             RenameBadPhoto(files);
@@ -211,34 +217,35 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                 return files;
             }
         }
-        private void  RenameBadPhoto(string[] files)
+        private void RenameBadPhoto(string[] files)
         {
             string pathTo;
             string nameWares;
-            for (int i = 0; i < files.Length; i++)
-            {
-                nameWares = Path.GetFileNameWithoutExtension(files[i]);
-                if (nameWares.Length != 9)
+            if (files != null)
+                for (int i = 0; i < files.Length; i++)
                 {
-                    if (int.TryParse(nameWares, out int res))
+                    nameWares = Path.GetFileNameWithoutExtension(files[i]);
+                    if (nameWares.Length != 9)
                     {
-                        try
+                        if (int.TryParse(nameWares, out int res))
                         {
-                            pathTo = pathToPhoto + res.ToString("D9") + Path.GetExtension(files[i]);
-                            if(File.Exists(pathTo))
-                                File.Delete(pathTo);
-                            System.IO.File.Move(Path.GetFullPath(files[i]), pathTo);
-                            files[i] = pathTo;
-                            continue;
+                            try
+                            {
+                                pathTo = pathToPhoto + res.ToString("D9") + Path.GetExtension(files[i]);
+                                if (File.Exists(pathTo))
+                                    File.Delete(pathTo);
+                                System.IO.File.Move(Path.GetFullPath(files[i]), pathTo);
+                                files[i] = pathTo;
+                                continue;
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                            }
+
                         }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
-                        
                     }
                 }
-            }
         }
         private void OpenToFilePath(object sender, RoutedEventArgs e)
         {
@@ -461,6 +468,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             }
             if (int.TryParse(CodeWaresTextBox.Text, out int res))
                 CodeWaresTextBox.Text = res.ToString("D9");
+
 
             foreach (var item in listWares)
             {
