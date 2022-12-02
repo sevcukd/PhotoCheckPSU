@@ -22,6 +22,7 @@ using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.
 using PhotoCheck.SQL;
 using PhotoCheck.Models;
 using Task = System.Threading.Tasks.Task;
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace PhotoCheck
 {
@@ -39,7 +40,7 @@ namespace PhotoCheck
         public List<SQLWares> listWares { get; set; }
         public List<SQLKasaList> KasaList { get; set; }
         public List<SQLExpressGoods> ExpressGoods { get; set; }
-        List<SQLExpressGoods> SortedExpressGoods { get; set; }
+        public List<SQLExpressGoods> SortedExpressGoods { get; set; }
         public List<SQLWeightGoods> WeightGoods { get; set; }
         public List<PhotoInfo> DuplicatePhotos { get; set; }
         public string SelectedExpressGoodsCode { get; set; }
@@ -968,6 +969,7 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                 //Фото
                 if (SortedExpressGoods[counter].pathPhoto != null)
                 {
+                    Graphics graphic = e.Graphics;
                     System.Drawing.Image waresImage = System.Drawing.Image.FromFile(SortedExpressGoods[counter].pathPhoto);
                     waresImageWidth = waresImage.Width;
                     waresImageHeight = waresImage.Height;
@@ -979,7 +981,8 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                     waresImageHeight = waresImageHeight * coef;
                     waresImageWidth = waresImageWidth * coef;
 
-                    e.Graphics.DrawImage(waresImage, left + 450, top + 13, Convert.ToInt32(waresImageWidth), Convert.ToInt32(waresImageHeight));
+                    graphic.DrawImage(waresImage, left + 450, top + 13, Convert.ToInt32(waresImageWidth), Convert.ToInt32(waresImageHeight));
+                    waresImage.Dispose();
                 }
                 //якщо є штрих-код тоді друкуємо його
                 if (SortedExpressGoods[counter].bar_code != null && SortedExpressGoods[counter].bar_code.Length == 13)
