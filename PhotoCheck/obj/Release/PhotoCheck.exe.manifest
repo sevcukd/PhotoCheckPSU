@@ -122,7 +122,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>YhAG1G2K6nHJXUURQqH6EhUVHKtPyWMxSZkeRCaN+2M=</dsig:DigestValue>
+        <dsig:DigestValue>ZLuk8CiDj8s6aiFzWz6t+KzI0nyfMP6Fh5thv/7TyJ0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -234,13 +234,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="PhotoCheck.exe.config" size="805">
+  <file name="PhotoCheck.exe.config" size="876">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>j9PzeGPpOqP/LrCfU5QL/wxZXgZqxCXb+mFGhvXSGWg=</dsig:DigestValue>
+      <dsig:DigestValue>fhFk0kceiN6t24scjl7o6cX+s6ZVED4aUk77Yppsfgs=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Spar.ico" size="254558">

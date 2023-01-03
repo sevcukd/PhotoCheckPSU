@@ -33,7 +33,7 @@ D:\Work\PhotoCheck\PhotoCheck\bin\Release\System.Threading.Tasks.Extensions.xml
 D:\Work\PhotoCheck\PhotoCheck\bin\Release\System.ValueTuple.xml
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.AssemblyReference.cache
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.SuggestedBindingRedirects.cache
-D:\Work\PhotoCheck\PhotoCheck\obj\Release\Interop.UCAddinLib.dll
+D:\Work\PhotoCheck\PhotoCheck\obj\Release\Interop.LCC11.dll
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\PhotoCheck.csproj.ResolveComReference.cache
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\FindPhoto.g.cs
 D:\Work\PhotoCheck\PhotoCheck\obj\Release\MainWindow.g.cs

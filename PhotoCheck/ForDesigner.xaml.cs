@@ -48,6 +48,7 @@ namespace PhotoCheck
         public string SelectedWeightGroup { get; set; }
         public List<SQLWeightGroups> WeightGroups { get; set; }
         int counter = 0;
+        int lastWaresThisDoc = 0;
         public bool isColumWrite { get; set; }
         public bool isExcelPath { get; set; }
         public bool isExcelOk
@@ -894,27 +895,38 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             //сортування по групах
             SortedExpressGoods = ExpressGoods.OrderBy(n => n.Name_Button).ToList();
 
+
+
             LinkToPhoto();
 
-            //Create a PrintPreviewDialog/PrintDialog object  
-            System.Windows.Forms.PrintDialog previewDlg = new System.Windows.Forms.PrintDialog();
-            //Create a PrintDocument object  
-            PrintDocument pd = new PrintDocument();
-            //Add print-page event handler
             counter = 0;
-            pd.PrintPage += pd_PrintPage;
-            //Set Document property of PrintPreviewDialog  
-            previewDlg.Document = pd;
-            //Display dialog  
-            //previewDlg.Show();
-            try
+
+            for (int i = 0; i < SortedExpressGoods.Count - 1; i++)
             {
-                if (previewDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    previewDlg.Document.Print(); // печатаем
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (SortedExpressGoods[i].Name_Button != SortedExpressGoods[i + 1].Name_Button)
+                {
+                    lastWaresThisDoc = i + 1;
+
+                    //Create a PrintPreviewDialog/PrintDialog object  
+                    System.Windows.Forms.PrintDialog previewDlg = new System.Windows.Forms.PrintDialog();
+                    //Create a PrintDocument object  
+                    PrintDocument pd = new PrintDocument();
+                    //Add print-page event handler
+                    pd.PrintPage += pd_PrintPage;
+                    //Set Document property of PrintPreviewDialog  
+                    previewDlg.Document = pd;
+                    //Display dialog  
+                    //previewDlg.Show();
+                    try
+                    {
+                        if (previewDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                            previewDlg.Document.Print(); // печатаем
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Windows.MessageBox.Show(ex.Message, "Помилка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
             }
         }
 
@@ -963,7 +975,8 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
             int totalFontSize = 10;
             double waresImageWidth;
             double waresImageHeight;
-            while (counter < SortedExpressGoods.Count)
+            double thisCounter = 0;
+            while (counter < lastWaresThisDoc)
             {
                 System.Drawing.Image imageBarcode;
                 //Фото
@@ -1032,16 +1045,19 @@ WHERE n_min_rest>0 AND  day_id = convert(char,getdate(),112)";
                 Pen myPen = new Pen(System.Drawing.Color.Gray, 3);
                 e.Graphics.DrawLine(myPen, 0, top + 23, 1000, top + 23);
                 top += 15;
-                if (counter < SortedExpressGoods.Count)
+                if (counter < lastWaresThisDoc)
+                {
                     counter++;
+                    thisCounter++;
+                }
 
-                if (counter % 10 == 0)
+                if (thisCounter % 10 == 0)
                 {
                     break;
                 }
 
             }
-            if (counter < SortedExpressGoods.Count)
+            if (counter < lastWaresThisDoc)
             {
                 //Has more pages??  
                 e.HasMorePages = true;
